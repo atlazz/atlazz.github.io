@@ -4,6 +4,8 @@ import Maze from "./Maze";
 export default class MazeGenerator extends ui.test.TestSceneUI {
     private camera: Laya.Camera;
 
+    private outData: Array<Array<boolean>>;
+
     // 迷宫
     private maze: Maze;
     // 迷宫矩阵
@@ -33,7 +35,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     // 障碍物资源列表组
     private barriersComboBox: Array<Array<Laya.ComboBox>> = new Array<Array<Laya.ComboBox>>();
     // 障碍物标识列表
-    private barriersList: string[] = ["Bush_11", "Sponge", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Wall_Wo_Hor", "Wall_Wo_Ver", "Brick_Hor_1", "Wall_Wo_Ver", "Brick_Hor_2", "Brick_Ver_1", "Wall_Hor_1", "Wall_Hor_2", "Wall_Hor_3", "Wall_Bot_B_1", "Wall_Bot_W_1", "Wall_Bot_W_2", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23", "Door_24", "Door_G24", "Door_B24", "Door_C24", "Door_W24"];
+    private barriersList: string[] = ["null", "Bush_11", "Sponge", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Wall_Wo_Hor", "Wall_Wo_Ver", "Brick_Hor_1", "Wall_Wo_Ver", "Brick_Hor_2", "Brick_Ver_1", "Wall_Hor_1", "Wall_Hor_2", "Wall_Hor_3", "Wall_Bot_B_1", "Wall_Bot_W_1", "Wall_Bot_W_2", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23", "Door_24", "Door_G24", "Door_B24", "Door_C24", "Door_W24"];
     private barriersNum: number = 48;
 
     constructor() {
@@ -55,7 +57,6 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         Laya.stage.height = 1000;
 
         //添加迷宫盒
-        // this.mazeBox = scene.addChild(new Laya.Sprite()) as Laya.Sprite;
         this.mazeBox.x = 100;
         this.mazeBox.y = 100;
     }
@@ -103,6 +104,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
         // 渲染迷宫
         this.mazeSprite = new Array<Array<Laya.Sprite>>();
+        this.barriersComboBox = new Array<Array<Laya.ComboBox>>();
         // 初始化迷宫单元
         for (let i: number = 0; i < this.width; i++) {
             this.mazeSprite.push(new Array<Laya.Sprite>());
@@ -126,11 +128,11 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
                 // 资源下拉表
                 let comboBox: Laya.ComboBox = new Laya.ComboBox("comp/combobox.png", barriersLabel);
-                comboBox.width = this.unitWidth * 1.5;
-                comboBox.height = this.unitWidth / 4;
-                comboBox.x = (i + 1) * this.unitWidth - comboBox.width;
+                comboBox.width = 120;
+                comboBox.height = 25;
+                comboBox.x = i * this.unitWidth;
                 comboBox.y = j * this.unitWidth;
-                comboBox.zOrder = 1;
+                // comboBox.zOrder = 1;
                 comboBox.visibleNum = 20;
                 comboBox.visible = false;
                 // 下拉列表内滚动条
@@ -145,11 +147,59 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     this.posLabel.changeText("坐标: (" + i + "," + j + ")");
                     if (this.outMaze[i][j]) {
                         this.barriersComboBox[i][j].visible = true;
-                        let urlString: string = this.barriersComboBox[i][j].selectedLabel
-                        if (urlString) {
+                        // 切换层级
+                        let flag_zOrder: number = this.mazeSprite[i][j].zOrder - this.barriersComboBox[i][j].zOrder;
+                        this.mazeSprite[i][j].zOrder = 0;
+                        this.barriersComboBox[i][j].zOrder = 1;
+                        let urlString: string = this.barriersComboBox[i][j].selectedLabel;
+                        if (urlString && flag_zOrder < 0) {
+                            if (urlString === "null") {
+                                this.mazeSprite[i][j].texture.load(this.url_wall);
+                                this.mazeSprite[i][j].width = this.unitWidth;
+                                this.mazeSprite[i][j].height = this.unitWidth;
+                                // 切换层级
+                                this.mazeSprite[i][j].zOrder = 1;
+                                this.barriersComboBox[i][j].zOrder = 0;
+                                return;
+                            }
+
+                            let x: number = +urlString[urlString.length - 2];
+                            let y: number = +urlString[urlString.length - 1];
+                            let cntX: number = 0;
+                            let cntY: number = 0;
+                            let flag: boolean = true;
+                            if (x > 1 || y > 1) {
+                                while (cntX < x) {
+                                    cntY = 0;
+                                    while (cntY < y) {
+                                        // invalid
+                                        if (i + cntX >= this.width || j + cntY >= this.height || !this.outMaze[i + cntX][j + cntY]) {
+                                            this.barriersComboBox[i][j].selectedLabel = null;
+                                            this.mazeSprite[i][j].texture.load(this.url_wall);
+                                            flag = false;
+                                            break;
+                                        }
+                                        if (!flag) { break; }
+                                        cntY++;
+                                    }
+                                    if (!flag) { break; }
+                                    cntX++;
+                                }
+                            }
+                            else {
+                                cntX = 1;
+                                cntY = 1;
+                            }
+
                             urlString = "res/barriers_texture/" + urlString + ".png";
-                            this.mazeSprite[i][j].texture.load(urlString);
-                            this.barriersComboBox[i][j].visible = false;
+                            if (flag) {
+                                this.mazeSprite[i][j].texture.load(urlString);
+                                this.mazeSprite[i][j].width = this.unitWidth * cntX;
+                                this.mazeSprite[i][j].height = this.unitWidth * cntY;
+                                // 切换层级
+                                this.mazeSprite[i][j].zOrder = 1;
+                                this.barriersComboBox[i][j].zOrder = 0;
+                            }
                         }
                     }
                 });
@@ -178,6 +228,32 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     private keyboardListen() {
         // 键盘按下处理
         Laya.stage.on(Laya.Event.KEY_DOWN, this, (e) => {
+            // generate maze
+            if (e["keyCode"] === 71) {
+                if (!this.widthInput.text || !this.heightInput.text || !this.diffInput.text) {
+                    return;
+                }
+                this.maxTryTimes = 1000000;
+                if (this.trytimesInput.text) {
+                    this.maxTryTimes *= (+this.trytimesInput.text);
+                }
+
+                // 重置
+                if (this.mazeSprite.length !== 0) {
+                    for (let i: number = 0; i < this.width; i++) {
+                        for (let j: number = 0; j < this.height; j++) {
+                            this.mazeBox.removeChild(this.mazeSprite[i][j]);
+                            this.mazeBox.removeChild(this.barriersComboBox[i][j]);
+                        }
+                    }
+                    this.mazeBox.removeChild(this.player);
+                }
+
+                this.width = +this.widthInput.text;
+                this.height = +this.heightInput.text;
+                this.diff = +this.diffInput.text;
+                this.generateMaze();
+            }
             if (this.outMaze) {
                 // left
                 if (e["keyCode"] === 37) {
@@ -246,47 +322,95 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     this.player.y = this.idx_y * this.unitWidth;
                     this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
                 }
-            }
-            // generate maze
-            if (e["keyCode"] === 71) {
-                if (!this.widthInput.text || !this.heightInput.text || !this.diffInput.text) {
-                    return;
+                // print data
+                else if (e["keyCode"] === 80) {
+                    this.print();
                 }
-                this.maxTryTimes = 1000000;
-                if (this.trytimesInput.text) {
-                    this.maxTryTimes *= (+this.trytimesInput.text);
-                }
-                this.width = +this.widthInput.text;
-                this.height = +this.heightInput.text;
-                this.diff = +this.diffInput.text;
-                this.generateMaze();
-            }
-            // print data
-            else if (e["keyCode"] === 80) {
-                this.print();
             }
         });
     }
 
     // 输出迷宫数据
     private print() {
-        let data: string = "Maze msg: {";
-        data += "w:" + this.width + ", h:" + this.height + ", ";
+        this.outData = new Array<Array<boolean>>();
+        for (let i: number = 0; i < this.width; i++) {
+            this.outData.push(new Array<boolean>());
+            for (let j: number = 0; j < this.height; j++) {
+                this.outData[i].push(this.outMaze[i][j]);
+            }
+        }
+
+        let data: string = "{";
+        data += "\n\tx:" + this.width + ",\n\ty:" + this.height + ",";
 
         let flag = false;
-        data += "barriersArr:[";
+        data += "\n\tbarriersArr:[";
         for (let i = 0; i < this.width; i++) {
             for (var j = 0; j < this.height; j++) {
-                if (this.outMaze[i][j]) {
+                if (this.outData[i][j]) {
                     if (flag) { data += ", " }
                     flag = true;
-                    data += "\"" + i + "," + j + "," + this.barriersComboBox[i][j].selectedLabel + "\"";
+                    // 是否多单元格连体
+                    let str = this.barriersComboBox[i][j].selectedLabel;
+                    if (str) {
+                        let x: number = +str[str.length - 2];
+                        let y: number = +str[str.length - 1];
+                        let cntX: number = 0;
+                        let cntY: number = 0;
+                        let isHuge: boolean = true;
+
+                        if (x > 1 || y > 1) {
+                            let flag1 = false;
+                            while (cntX < x) {
+                                cntY = 0;
+                                while (cntY < y) {
+                                    // invalid
+                                    if (i + cntX >= this.width || j + cntY >= this.height || !this.outData[i + cntX][j + cntY]) {
+                                        isHuge = false;
+                                        break;
+                                    }
+                                    if (!flag1) {
+                                        data += "\"" + (i + cntX) + "," + (j + cntY);
+                                    }
+                                    else {
+                                        data += "|" + (i + cntX) + "," + (j + cntY);
+                                        this.outData[i + cntX][j + cntY] = false;
+                                    }
+                                    flag1 = true;
+                                    cntY++;
+                                }
+                                if (!isHuge) { break; }
+                                cntX++;
+                            }
+                        }
+                        else {
+                            data += "\"" + i + "," + j;
+                        }
+                    }
+                    else {
+                        data += "\"" + i + "," + j;
+                    }
+                    data += "\"";
                 }
             }
         }
-        data += "], ";
-        data += "player_pos:\"" + this.maze.startX + "," + this.maze.startY + "\"";
-        data += "}";
+        data += "],";
+
+        flag = false;
+        data += "\n\tbarriersTyp:[";
+        for (let i = 0; i < this.width; i++) {
+            for (var j = 0; j < this.height; j++) {
+                if (this.outData[i][j]) {
+                    if (flag) { data += ", " }
+                    flag = true;
+                    data += "\"" + this.barriersComboBox[i][j].selectedLabel + "\"";
+                }
+            }
+        }
+        data += "],";
+
+        data += "\n\tplayer_pos:\"" + this.maze.startX + "," + this.maze.startY + "\",";
+        data += "\n}";
 
         console.log(data);
     }
