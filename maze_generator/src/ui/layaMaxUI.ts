@@ -11,6 +11,7 @@ export module ui.test {
 		public diffInput:Laya.TextInput;
 		public trytimesInput:Laya.TextInput;
 		public mazeBox:Laya.Box;
+		public tutorialText:laya.display.Text;
         constructor(){ super()}
         createChildren():void {
             super.createChildren();

@@ -103,10 +103,10 @@
         {
             "x":15,
             "type":"Text",
-            "searchKey":"Text",
-            "props":{"y":950,"x":50,"text":"g - 生成     r - 重置","fontSize":30,"bold":true},
+            "searchKey":"Text,tutorialText",
+            "props":{"y":950,"x":50,"var":"tutorialText","text":"上下左右 - 操作     g - 生成      r - 重置     p - 打印","fontSize":30,"bold":true},
             "nodeParent":1,
-            "label":"Text",
+            "label":"tutorialText",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
