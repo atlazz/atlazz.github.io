@@ -29,6 +29,9 @@ export default class Maze {
     private checkCnt: number = 0;
     private maxUnchangeCntCheck: number = 100;
 
+    /** 方向数组 */
+    private directionList: string[] = [];
+
     constructor(width: number, height: number, minCount?: number) {
         this.width = width;
         this.height = height;
@@ -95,30 +98,30 @@ export default class Maze {
      * */
     private randomMove(x: number, y: number, preCount: number, isCheck: boolean = false): boolean {
         // 判断四个方向是否可达
-        let directionList: string[] = [];
+        this.directionList.length = 0;
         if (x > 0 && this.maze[x - 1][y] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "right" && this.solution[this.solution.length - 2] === "left"))
-            directionList.push("left");
+            this.directionList.push("left");
         }
         if (x < this.width - 1 && this.maze[x + 1][y] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "left" && this.solution[this.solution.length - 2] === "right"))
-            directionList.push("right");
+            this.directionList.push("right");
         }
         if (y > 0 && this.maze[x][y - 1] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "down" && this.solution[this.solution.length - 2] === "up"))
-            directionList.push("up");
+            this.directionList.push("up");
         }
         if (y < this.height - 1 && this.maze[x][y + 1] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "up" && this.solution[this.solution.length - 2] === "down"))
-            directionList.push("down");
+            this.directionList.push("down");
         }
         // 若四面皆为墙，则生成失败，该情况理应不存在
-        if (!directionList) {
+        if (!this.directionList) {
             return false;
         }
 
         // 随机选择方向
-        let direction: string = directionList[Math.floor(Math.random() * directionList.length)];
+        let direction: string = this.directionList[Math.floor(Math.random() * this.directionList.length)];
         // 记录
         this.solution.push(direction);
 
@@ -455,7 +458,7 @@ export default class Maze {
             }
         }
         // 重置解法
-        this.solution = [];
+        this.solution.length = 0;
     }
 
     /** 输出迷宫矩阵, 每个单元格两种状态: true 为墙, false 为空 */

@@ -58,7 +58,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
         //添加迷宫盒
         this.mazeBox.x = 100;
-        this.mazeBox.y = 100;
+        this.mazeBox.y = this.tutorialText.y - 100;
     }
 
     // 迷宫生成
@@ -123,7 +123,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 unit.width = this.unitWidth;
                 unit.height = this.unitWidth;
                 unit.x = i * this.unitWidth;
-                unit.y = j * this.unitWidth;
+                unit.y = -j * this.unitWidth;
                 this.mazeSprite[i].push(unit);
 
                 // 资源下拉表
@@ -131,7 +131,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 comboBox.width = 120;
                 comboBox.height = 25;
                 comboBox.x = i * this.unitWidth;
-                comboBox.y = j * this.unitWidth;
+                comboBox.y = -j * this.unitWidth;
                 // comboBox.zOrder = 1;
                 comboBox.visibleNum = 20;
                 comboBox.visible = false;
@@ -213,7 +213,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         this.player.texture = new Laya.Texture();
         this.player.texture.load(this.url_player);
         this.player.x = this.maze.startX * this.unitWidth;
-        this.player.y = this.maze.startY * this.unitWidth;
+        this.player.y = -this.maze.startY * this.unitWidth;
         this.mazeBox.addChild(this.player);
 
         // 玩家位置记录
@@ -267,12 +267,12 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         }
                     }
                 }
-                // up
-                else if (e["keyCode"] === 38) {
+                // down
+                else if (e["keyCode"] === 40) {
                     while (this.idx_y > 0 && !this.outMaze[this.idx_x][this.idx_y - 1]) {
                         this.idx_y--;
                         // 改变玩家位置
-                        this.player.y -= this.unitWidth;
+                        this.player.y += this.unitWidth;
                         // 玩家位置涂色
                         if (this.mazeSprite[this.idx_x][this.idx_y].texture.url != this.url_passed) {
                             this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
@@ -291,12 +291,12 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         }
                     }
                 }
-                // down
-                else if (e["keyCode"] === 40) {
+                // up
+                else if (e["keyCode"] === 38) {
                     while (this.idx_y < this.height - 1 && !this.outMaze[this.idx_x][this.idx_y + 1]) {
                         this.idx_y++;
                         // 改变玩家位置
-                        this.player.y += this.unitWidth;
+                        this.player.y -= this.unitWidth;
                         // 玩家位置涂色
                         if (this.mazeSprite[this.idx_x][this.idx_y].texture.url != this.url_passed) {
                             this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
@@ -319,7 +319,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     this.idx_x = this.maze.startX;
                     this.idx_y = this.maze.startY;
                     this.player.x = this.idx_x * this.unitWidth;
-                    this.player.y = this.idx_y * this.unitWidth;
+                    this.player.y = -this.idx_y * this.unitWidth;
                     this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
                 }
                 // print data
