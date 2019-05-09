@@ -35,8 +35,8 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     // 障碍物资源列表组
     private barriersComboBox: Array<Array<Laya.ComboBox>> = new Array<Array<Laya.ComboBox>>();
     // 障碍物标识列表
-    private barriersList: string[] = ["null", "Bush_11", "Sponge", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Wall_Wo_Hor", "Wall_Wo_Ver", "Brick_Hor_1", "Wall_Wo_Ver", "Brick_Hor_2", "Brick_Ver_1", "Wall_Hor_1", "Wall_Hor_2", "Wall_Hor_3", "Wall_Bot_B_1", "Wall_Bot_W_1", "Wall_Bot_W_2", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23", "Door_24", "Door_G24", "Door_B24", "Door_C24", "Door_W24"];
-    private barriersNum: number = 48;
+    private barriersList: string[] = ["null", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Wall_WoHor_11", "Wall_WoVer_11", "Brick_Hor1_11", "Wall_WoVer_11", "Brick_Hor2_11", "Brick_Ver1_11", "Wall_Hor1_11", "Wall_Hor2_11", "Wall_Hor3_11", "Wall_BotB1_11", "Wall_BotW1_11", "Wall_BotW2_11", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23", "Door_24", "Door_G24", "Door_B24", "Door_C24", "Door_W24"];
+    private barriersNum: number = 49;
 
     constructor() {
         super();
@@ -240,8 +240,8 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
                 // 重置
                 if (this.mazeSprite.length !== 0) {
-                    for (let i: number = 0; i < this.width; i++) {
-                        for (let j: number = 0; j < this.height; j++) {
+                    for (let i: number = 0; i < this.mazeSprite.length; i++) {
+                        for (let j: number = 0; j < this.mazeSprite[i].length; j++) {
                             this.mazeBox.removeChild(this.mazeSprite[i][j]);
                             this.mazeBox.removeChild(this.barriersComboBox[i][j]);
                         }
@@ -352,7 +352,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     flag = true;
                     // 是否多单元格连体
                     let str = this.barriersComboBox[i][j].selectedLabel;
-                    if (str) {
+                    if (str && str !== "null") {
                         let x: number = +str[str.length - 2];
                         let y: number = +str[str.length - 1];
                         let cntX: number = 0;
