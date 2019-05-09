@@ -1,7 +1,4 @@
 D .
-R 78B7A8F3 关卡生成器需求.xlsx
-R 1C0D0DC1 贴图.7z
-R 112B9CB0 资源对应表0508.xlsx
 D comp
 P 316AD948 btn_close.png
 P 5B258D17 button.png
@@ -56,7 +53,7 @@ R C2EA58B4 Door_B24.png
 R 78D2965F Door_C24.png
 R 47DFB415 Door_G24.png
 R E82F2493 Door_W24.png
-R C53F4B9B Elecbox_11.png
+R C53F4B9B ElecBox_11.png
 R B8DDC653 Mail_11.png
 R 88A3438F Plate_11.png
 R DB4163EA Pod_11.png
