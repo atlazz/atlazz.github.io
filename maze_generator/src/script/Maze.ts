@@ -338,6 +338,9 @@ export default class Maze {
 
     /** 检验迷宫，目标使得玩家前几步骤操作有高容错率 */
     private check() {
+
+        this.maxUnchangeCntCheck = 10 * this.width * this.height;
+
         // 起点
         let x: number;
         let y: number;
