@@ -1,0 +1,246 @@
+/**版本号 */
+export const VERSION = "1.0.0";
+
+// ======================== 地址常量 ==========================
+/**首页场景 */
+export const URL_HomeView = "home/HomeView.scene";
+/**游戏场景 */
+export const URL_GameScene: string = "game/GameScene.scene";
+/**结束场景 */
+export const URL_OverView = "over/OverView.scene";
+/**复活对话框 */
+export const URL_ReviveView = "dialog/ReviveView.scene";
+
+/**玩家模型-猫 */
+export const URL_PlayerModelCat: string = "res/model/game/cat.lm";
+/**玩家材质-猫 */
+export const URL_PlayerMaterialCat: string = "res/texture/game/cat.png";
+/**玩家材质 */
+export const URL_PlayerTexture1: string = "res/texture/game/ball05.png";
+export const URL_PlayerTexture2: string = "res/texture/game/ball03.png";
+/**弹簧螺旋模型 */
+export const URL_HelixMesh: string = "res/model/game/helix.lm";
+/**冲击波材质 */
+export const URL_WaveTexture: string = "res/texture/game/wave.png";
+/**钻石模型 */
+export const URL_DiamondMesh: string = "res/model/game/diamond.lm";
+/**钻石碎片 */
+export const URL_DiamondPieceMesh: string = "res/model/game/diamond_piece.lm";
+/**天空背景 */
+export const URL_Background: string = "res/texture/game/bg.png";
+/**背景音乐 */
+export const URL_BGM: string = "res/sounds/TheFatRat.mp3";
+
+// ======================== 上层页面 ==========================
+/**分享位置 */
+export const RewardPos = {
+    OverShare: 'OverShare',
+    Revive: 'revive',
+}
+/**Banner广告位置 */
+export const BannerPos = {
+    HomeView: 'HomeView',
+    OverView: 'DieScene',
+    ReviveDialog: 'Revive',
+}
+/**复活倒数秒数 */
+export const ReviveCountdown: number = 5;
+
+// ======================== 游戏控制参数 ==========================
+/**游戏运行状态 */
+export enum GameState {
+    /**初始化完成 */
+    READY = 1,
+    /**正在运行 */
+    PLAYING = 2,
+    /**正在暂停 */
+    PAUSE = 3,
+    /**游戏结束 */
+    OVER = 4,
+}
+
+// ======================== 玩家参数 ==========================
+/**玩家跳跃状态 */
+export enum PlayerJumpState {
+    /**上跳 */
+    JUMPUP = 1,
+    /**下落 */
+    FALLDOWN = 2,
+    /**通关冲刺 */
+    SPRINT = 3,
+}
+/**玩家半径 */
+export const PlayerRadius: number = 0.45;
+/**玩家常规跳跃周期帧数 */
+export const PlayerJumpFrames: number = 20;
+/**玩家常规跳跃幅度 */
+//export const PlayerJumpStep: number[] = [0.5, 0.485, 0.46, 0.425, 0.38, 0.325, 0.26, 0.185, 0.1, 0.005];
+export const PlayerJumpStep: number[] = [0.8, 0.6, 0.5, 0.4, 0.3, 0.2, 0.15, 0.1, 0.05, 0.03];
+/**玩家弹簧跳跃周期帧数 */
+export const PlayerJumpFramesSpring: number = 27;
+/**玩家弹簧跳跃幅度 */
+export const PlayerJumpStepSpring: number[] = [1.2, 0.8, 0.6, 0.4, 0.3, 0.2, 0.15, 0.1, 0.05];
+
+/**玩家冲刺跳跃周期帧数 */
+export const PlayerJumpFramesSprint: number = 240;
+/**玩家冲刺跳跃幅度 */
+export const PlayerJumpStepSprint: number = PlayerJumpStep[0];
+/**镜头冲刺Y方向偏移：相对于玩家 */
+export const CameraOffsetYSprint: number = 15;
+
+/**玩家最大下降帧数：判断超出镜头死亡 */
+export const PlayerMaxDownFrames: number = 40;
+
+// ======================== 跳板参数 ==========================
+/**跳板种类 */
+export enum BoardType {
+    /**普通跳板 */
+    NORMAL = 0,
+    /**弹簧跳板 */
+    SPRING = 1,
+    /**掉落跳板 */
+    DROP = 2,
+    /**巨型跳板 */
+    GIANT = 3,
+    /**终点跳板 */
+    SPRINT = 4,
+}
+
+/**跳板半径 */
+export const BoardRadius: number = 1.3;
+/**跳板高度 */
+export const BoardHeight: number = 0.25;
+/**常规跳板间隔高度 */
+export const BoardGap: number = 4.3;
+/**弹簧跳板间隔高度 */
+export const BoardGapSpring: number = 9.0;
+/**冲刺跳板间隔高度 */
+export const BoardGapSprint: number = PlayerJumpStepSprint * PlayerJumpFramesSprint;
+/**场景X轴最大偏移值 */
+export const SceneMaxOffsetX: number = 3.5;
+
+/**常规跳板高度缩放 */
+export const BoardHeightScale: number = 1;
+/**掉落跳板高度缩放 */
+export const BoardHeightScaleDROP: number = 0.5;
+
+/**常规跳板半径缩放 */
+export const BoardRadiusScale: number = 1;
+/**巨型跳板半径缩放 */
+export const BoardRadiusScaleGiant: number = 2.8;
+
+/**跳板中心区半径 */
+export const BoardRadiusCenter: number = 0.35;
+/**跳板反射颜色 */
+export const BoardColor: Laya.Vector4 = new Laya.Vector4(0.6, 0.8, 1, 1);
+
+/**跳板初始位置 */
+export const BoardInitPos: Laya.Vector3 = new Laya.Vector3(0, 8, 0);
+/**跳板总数 */
+export const BoardNum: number = 7;
+/**跳板新建索引: 当当前跳板达到该值即新建 */
+export const BoardNewIndex: number = 2;
+
+/**撞击特效帧数 */
+export const BoardBumpFrames: number = 10;
+/**撞击特效幅度 */
+export const BoardBumpStep: number[] = [-0.15, -0.1, -0.07, -0.02, -0.003, 0.003, 0.02, 0.07, 0.1, 0.15];
+
+/**冲击波半径 */
+export const WaveRadius: number = 1.3;
+/**冲击波高度 */
+export const WaveHeight: number = 0.01;
+/**冲击波相对跳板Y方向偏移 */
+export const WaveOffsetY: number = 0.13;
+/**冲击波特效帧数 */
+export const BoardWaveFrames: number = 20;
+/**内圈冲击波特效开始帧数 */
+export const BoardWaveInnerStartFrames: number = 12;
+/**冲击波特效幅度 */
+export const BoardWaveStep: number = 0.15;
+/**内圈冲击波特效幅度 */
+export const BoardWaveInnerStep: number = 0.12;
+
+/**弹簧半径 */
+export const SpringRadius: number = 0.7;
+/**弹簧高度 */
+export const SpringHeight: number = 0.2;
+/**弹簧缩放特效帧数 */
+export const BoardSpringFrames: number = 10;
+/**弹簧螺旋高度缩放 */
+export const SpringHelixStep: number = 0.25;
+/**弹簧螺旋冲刺跳跃时高度缩放 */
+export const SpringHelixStepSprint: number = 0.8;
+/**弹簧顶盖高度步进 */
+export const SpringTopStep: number = 0.25;
+/**弹簧顶盖冲刺跳跃时高度缩放 */
+export const SpringTopStepSprint: number = 0.5;
+
+/**掉落特效帧数 */
+export const BoardDropFrames: number = 40;
+/**掉落幅度 */
+export const BoardDropStep: number = 0.5;
+
+/**跳板左右移动幅度 */
+export const BoardMovingStep: number = 0.03;
+
+/**跳板中心得分 */
+export const ScoreBoardCenter: number = 2;
+/**跳板非中心得分 */
+export const ScoreBoardNotCenter: number = 1;
+
+/**钻石半径 */
+export const DiamondRadius: number = 0.3;
+/**钻石数量 */
+export const DiamondNum: number = 10;
+/**钻石冲刺时Y方向步进 */
+export const DiamondSprintStepY: number = PlayerJumpStepSprint * 5;
+/**钻石起始判断帧 */
+export const DiamondStartFrame: number = 6;
+/**钻石得分 */
+export const DiamondScore: number = 1;
+/**冲刺钻石判定半径 */
+export const DiamondSprintScoreArea: number = 1;
+/**跳板钻石判定半径 */
+export const DiamondScoreArea: number = 0.6;
+/**钻石颜色 */
+export const DiamondColor: Laya.Vector4 = new Laya.Vector4(1, 0, 0.18823529, 0.6); //new Laya.Vector4(1, 0.27843, 0.392157, 0.6);
+/**钻石自转速度 */
+export const DiamondRotateStepY: number = 1.5;
+
+// ======================== 镜头参数 ==========================
+/**镜头初始位置 */
+export const CameraInitPos: Laya.Vector3 = new Laya.Vector3(0, 15, 16);
+/**镜头初始角度 */
+export const CameraInitRot: Laya.Vector3 = new Laya.Vector3(-15, 0, 0);
+/**镜头Y方向偏移：相对于当前跳板 */
+export const CameraOffsetY: number = 10;
+/**镜头X方向定位帧数 */
+export const CameraMoveXFrames: number = 20;
+/**镜头Y方向定位帧数 */
+export const CameraMoveYFrames: number = 15;
+/**镜头Y方向弹簧定位帧数 */
+export const CameraMoveYFramesSpring: number = 23;
+/**镜头X方向定位最小误差 */
+export const CameraMoveXMinErr: number = 0.02;
+/**镜头Y方向定位最小误差 */
+export const CameraMoveYMinErr: number = 0.02;
+
+/**天空盒颜色 */
+export const SkyColor: Laya.Vector4 = new Laya.Vector4(1, 0.65, 0.5, 1);
+
+// ======================== 方向光参数 ==========================
+/**方向光位置 */
+export const DirectionLightPos: Laya.Vector3 = new Laya.Vector3(0, 3, 0);
+/**方向光角度 */
+export const DirectionLightRot: Laya.Vector3 = new Laya.Vector3(-60, 0, 0);
+/**方向光颜色 */
+export const DirectionLightColor: Laya.Vector3 = new Laya.Vector3(1, 1, 1);
+
+// ======================== 各类算子 ==========================
+/**玩家角度旋转系数：跟随横向触摸幅度 */
+export const CoeffRotPlayer: number = -3;
+/**玩家X位移系数：跟随横向触摸幅度 */
+export const CoeffPosPlayer: number = 8 / 360;
+/**镜头X位移系数：跟随横向触摸幅度 */
+export const CoeffPosCam: number = 2.5 / (720 / 2);

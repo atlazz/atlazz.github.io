@@ -1,0 +1,507 @@
+import * as Const from "../Const";
+import GameScene from "../runtime/GameScene";
+import BoardBox from "../component/BoardBox";
+import Board from "../component/Board";
+import * as Util from "../util/Util";
+
+export default class Player extends Laya.Script {
+    /**玩家 */
+    private player: Laya.MeshSprite3D;
+    /**玩家拖尾 */
+    private playerTrail: Laya.TrailSprite3D;
+    /**当前跳板 */
+    public currBoard: Board;
+    /**当前跳板 */
+    public currBoardIdx: number = 0;
+    /**玩家跳跃状态 */
+    private jumpState: number;
+    /**玩家是否弹簧跳跃 */
+    private isJumpSpring: boolean = false;
+    /**玩家跳跃周期坐标 */
+    private currJumpFrame: number = 0;
+    /**手指是否按下 */
+    private isTouch: boolean = false;
+    /**手指X位置 */
+    private touchPosX: number;
+    /**难度等级 */
+    private diffLevel: number = 1;
+    /**避免两个冲刺跳板在同一数组内 */
+    private hasSprint: boolean = false;
+    /**前一跳板类型 */
+    private preType: number = Const.BoardType.NORMAL;
+
+    constructor() {
+        super();
+        console.log("Player constructor()");
+    }
+
+    onAwake() {
+        console.log("Player onAwake()");
+        this.player = this.owner as Laya.MeshSprite3D;
+        this.registerListener();
+        this.reset();
+        this.initTrail();
+    }
+
+    /**注册监听 */
+    private registerListener() {
+        GameScene.instance.on(Laya.Event.MOUSE_DOWN, this, this.onTouchDown);
+        GameScene.instance.on(Laya.Event.MOUSE_UP, this, this.onTouchUp);
+    }
+    
+    /**手指按下 */
+    onTouchDown() {
+        this.isTouch = true;
+        this.touchPosX = Laya.stage.mouseX;
+    }
+
+    /**手指离开 */
+    onTouchUp() {
+        this.isTouch = false;
+    }
+
+    /**初始化拖尾 */
+    private initTrail() {
+        this.playerTrail = new Laya.TrailSprite3D();
+
+        // 设置拖尾过滤器
+        this.playerTrail.trailFilter.time = 0.7;
+        //this.playerTrail.trailFilter.minVertexDistance = 0.01;
+        this.playerTrail.trailFilter.alignment = Laya.TrailFilter.ALIGNMENT_TRANSFORM_Z;
+
+        // 设置宽度曲线
+        let trailWidthCurve: Array<Laya.FloatKeyframe> = new Array<Laya.FloatKeyframe>();
+        let widthKeyframeNum: number = 10;
+        this.playerTrail.trailFilter.widthMultiplier = 0.95;
+        for (let i: number = 0; i <= widthKeyframeNum; i++) {
+            trailWidthCurve[i] = new Laya.FloatKeyframe();
+            trailWidthCurve[i].time = this.playerTrail.trailFilter.time * i / widthKeyframeNum;
+            trailWidthCurve[i].value = this.playerTrail.trailFilter.widthMultiplier * (1 - i / widthKeyframeNum);
+            trailWidthCurve[i].inTangent = 0;   // ps: 两项设置为5, 微信上会是鱼尾巴...
+            trailWidthCurve[i].outTangent = 0;
+        }
+        this.playerTrail.trailFilter.widthCurve = trailWidthCurve;
+
+        // 设置颜色梯度
+        this.playerTrail.trailFilter.colorGradient.updateColorAlpha(0, 0, 1);
+        this.playerTrail.trailFilter.colorGradient.updateColorAlpha(1, 1, 0);
+        // this.playerTrail.trailFilter.colorGradient.updateColorRGB(0, 0, new Laya.Color(0.7, 0.7, 0.7, 1));
+        // this.playerTrail.trailFilter.colorGradient.updateColorRGB(1, 1, new Laya.Color(1, 1, 1, 1));
+
+        // 设置拖尾渲染器
+        let trailMat: Laya.TrailMaterial = new Laya.TrailMaterial();
+        trailMat.color = new Laya.Vector4(1, 1, 1, 0.2);
+        trailMat.renderMode = Laya.TrailMaterial.RENDERMODE_ALPHABLENDED;
+        this.playerTrail.trailRenderer.material = trailMat;
+
+        // 设置拖尾位置
+        this.setTrailPos();
+
+        // 添加到场景
+        this.player.parent.addChild(this.playerTrail);
+    }
+
+    reset() {
+        // 重置难度
+        this.diffLevel = 1;
+        // 重置位置
+        let initPos: Laya.Vector3 = Const.BoardInitPos.clone();
+        initPos.y += Const.PlayerRadius + Const.BoardHeight / 2 - 0.001;
+        this.player.transform.localPosition = initPos;
+        this.player.transform.localRotationEuler = new Laya.Vector3(0, 0, 0);
+        // 重置跳跃周期
+        this.currJumpFrame = 0;
+        // 重置跳跃类型
+        this.jumpState = Const.PlayerJumpState.FALLDOWN;
+        this.hasSprint = false;
+        // 重置当前跳板索引
+        this.currBoardIdx = 0;
+        // 激活玩家
+        this.show();
+    }
+
+    getPlayer(): Laya.MeshSprite3D {
+        return this.player;
+    }
+
+    show() {
+        this.player.active = true;
+    }
+
+    hide() {
+        this.player.active = false;
+    }
+
+    
+    onUpdate() {
+        // 正在游戏中
+        if (GameScene.instance.state === Const.GameState.PLAYING) {
+            
+            let boardBoxCompo: BoardBox = GameScene.instance.boardBoxCompo;
+            let boardList: Board[] = boardBoxCompo.getBoardList();
+
+            // 是否冲刺类型
+            if (this.jumpState === Const.PlayerJumpState.SPRINT) {
+                // 是否冲刺结束
+                if (this.currJumpFrame > Const.PlayerJumpFramesSprint) {
+                    // 重置
+                    this.jumpState = Const.PlayerJumpState.JUMPUP;
+                    this.isJumpSpring = false;
+                    this.currJumpFrame = 0;
+                    this.hasSprint = false;
+                    // 去激活钻石
+                    boardBoxCompo.clearDiamond();
+                }
+                this.currJumpFrame++;
+
+                // 冲刺钻石得分判定
+                let diamondList: Laya.MeshSprite3D[] = boardBoxCompo.getDiamondSprintList();
+                for (let i: number = 0; i < Const.DiamondNum; i++) {
+                    if (Math.abs(this.player.transform.localPositionY - diamondList[i].transform.localPositionY) <= Const.DiamondSprintScoreArea) {
+                        if (Math.abs(this.player.transform.localPositionX - diamondList[i].transform.localPositionX) <= Const.DiamondSprintScoreArea) {
+                            GameScene.instance.addScore(Const.DiamondScore);
+                            diamondList[i].active = false;
+                        }
+                    }
+                }
+
+                // 更新玩家Y位置
+                this.setPosY();
+                // 更新玩家X位置：跟随横向触摸幅度
+                this.setPosX();
+                // 更新鼠标位置
+                this.touchPosX = Laya.stage.mouseX;
+
+                // 更新镜头Y位置：冲刺过程中与玩家Y位置绑定
+                let camPosY = this.player.transform.localPositionY + Const.CameraOffsetYSprint;
+                GameScene.instance.cameraBoxCompo.setDesPosY(camPosY);
+                // let camera: Laya.Camera = GameScene.instance.cameraBoxCompo.camera;
+                // camera.transform.localPositionY = this.player.transform.localPositionY + Const.CameraOffsetYSprint;
+            }
+
+            else {
+                /** 1.跳板碰撞判断 */
+                // 仅当前跳板以及其前后跳板，自上而下
+                for (let idx_board: number = this.currBoardIdx + 1; idx_board >= 0; idx_board--) {
+                    
+                    // 处于钻石判定范围内
+                    let playerPos: Laya.Vector3 = this.player.transform.localPosition.clone();
+                    let boardPos: Laya.Vector3 = boardList[idx_board].getPos();
+                    if (Math.abs(playerPos.x - boardPos.x) <= boardList[idx_board].getRadius()) {
+                        if (Math.abs(playerPos.y - (boardPos.y + Const.BoardHeight)) <= Const.DiamondScoreArea) {
+                            // 跳板上钻石得分判断
+                            boardList[idx_board].checkDiamond(this.player.transform.localPositionX);
+                        }
+                    }
+
+                    // 玩家是否处于下落周期
+                    if (this.jumpState === Const.PlayerJumpState.FALLDOWN) {
+
+                        // 玩家死亡判断: 根据下落时间判断是否移出镜头
+                        if (this.currJumpFrame > Const.PlayerMaxDownFrames || (this.currBoard.getPos().y - this.player.transform.localPositionY) > (Const.BoardGap + Const.BoardHeight)) {
+                            GameScene.instance.gameDie();
+                            return;
+                        }
+
+                        // 处于跳板碰撞判定范围内
+                        if (this.isOnBoard(boardList[idx_board])) {
+                            // 存储当前跳板
+                            this.currBoard = boardList[idx_board];
+                            this.currBoardIdx = idx_board;
+                            // 激活跳板
+                            this.activeCurrBoard();
+                            // 结束判断
+                            break;
+                        }
+                    }
+                }
+
+                /** 2.钻石碰撞判断：遍历钻石列表 */
+
+                /** 3.玩家状态更新：位置、角度、形变、跳跃周期 */
+                // 更新跳跃周期
+                this.currJumpFrame++;
+                if (this.jumpState === Const.PlayerJumpState.JUMPUP) {
+                    if (this.isJumpSpring && this.currJumpFrame >= Const.PlayerJumpFramesSpring) {
+                        this.jumpState = Const.PlayerJumpState.FALLDOWN;
+                        this.currJumpFrame = 0;
+                    }
+                    else if (!this.isJumpSpring && this.currJumpFrame >= Const.PlayerJumpFrames) {
+                        this.jumpState = Const.PlayerJumpState.FALLDOWN;
+                        this.currJumpFrame = 0;
+                    }
+                }
+                // 更新Y位置：跟随跳跃周期坐标
+                this.setPosY();
+                // 更新X位置：跟随横向触摸幅度
+                this.setPosX();
+                // 更新Z角度：跟随横向触摸幅度
+                this.setRotZ();
+                // 更新鼠标位置
+                this.touchPosX = Laya.stage.mouseX;
+                // 更新形变：根据跳跃周期坐标 todo <=================
+
+                
+                /** 4.镜头X位置更新：与玩家X位置绑定 */
+                if (this.currBoard.getType() !== Const.BoardType.SPRINT){
+                    let camPosX = this.player.transform.localPositionX;
+                    GameScene.instance.cameraBoxCompo.setDesPosX(camPosX);
+                }
+
+                /** 5.触摸位置更新 */
+                if (this.isTouch) {
+                    this.touchPosX = Laya.stage.mouseX;
+                }
+            }
+
+            // 设置拖尾位置
+            this.setTrailPos();
+        }
+    }
+
+    /** 跳板碰撞判断 */
+    private isOnBoard(board: Board): boolean {
+        let playerPos: Laya.Vector3 = this.player.transform.localPosition.clone();
+        let boardPos: Laya.Vector3 = board.getPos();
+        
+        let x: number = Math.abs(playerPos.x - boardPos.x);
+        let y: number = playerPos.y - boardPos.y;
+        // X方向判断
+        if (x <= board.getRadius()) {
+            // Y方向判断
+            if (y >= 0 && y <= (Const.PlayerRadius + board.getHeight() / 2)) {
+                return true;
+            }
+            // 弹簧跳跃, 低于当前跳板
+            else if (this.isJumpSpring && this.currJumpFrame >= Const.PlayerJumpFramesSpring) {
+                if (Math.abs(y) < Const.PlayerJumpStepSpring[0]) {
+                    return true;
+                }
+            }
+            // 常规跳跃, 低于当前跳板
+            else if (!this.isJumpSpring && this.currJumpFrame >= Const.PlayerJumpFrames) {
+                if (Math.abs(y) < Const.PlayerJumpStep[0]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /** 激活跳板 */
+    private activeCurrBoard() {
+        // 获取玩家位置
+        let playerPos: Laya.Vector3 = this.player.transform.localPosition.clone();
+        // 获取当前跳板位置
+        let boardPos: Laya.Vector3 = this.currBoard.getPos();
+        // 获取当前跳板种类
+        let boardType: number = this.currBoard.getType();
+
+        // 重置玩家Y位置
+        this.player.transform.localPositionY = boardPos.y + Const.PlayerRadius + this.currBoard.getHeight() / 2 - 0.01;
+        // 重置玩家跳跃周期
+        this.currJumpFrame = 0;
+        // 重置玩家跳跃状态
+        if (boardType === Const.BoardType.SPRINT){
+            // 冲刺上升
+            this.jumpState = Const.PlayerJumpState.SPRINT;
+            
+            // 摆正玩家角度
+            this.player.transform.localRotationEulerZ = 0;
+            // 更新镜头X位置，与冲刺跳板X位置绑定，此后冲刺过程中X位置不变
+            let camPosX = boardPos.x;
+            GameScene.instance.cameraBoxCompo.setDesPosX(camPosX);
+        }
+        else {
+            this.jumpState = Const.PlayerJumpState.JUMPUP;
+        }
+
+        // 判断玩家是否跳到新跳板
+        if (this.currBoard.isActive === false) {
+            // 设置当前跳板已碰撞激活
+            this.currBoard.isActive = true;
+
+            // 玩家得分判断
+            let score: number = Const.ScoreBoardNotCenter;
+            if (boardType === Const.BoardType.NORMAL || boardType === Const.BoardType.DROP) {
+                if (Math.abs(playerPos.x - boardPos.x) <= Const.BoardRadiusCenter) {
+                    score = Const.ScoreBoardCenter;
+                    // 跳板中心区撞击特效 todo <=================
+                    //currBoard.bumpCenterEffect();
+                }
+            }
+            // 加分
+            GameScene.instance.addScore(score);
+            // 根据分数进行难度调整
+            this.diffLevel += score / 2;
+
+            // 创建新跳板
+            for (let i: number = this.currBoardIdx - Const.BoardNewIndex; i > 0; i--) {
+                this.newBoard();
+            }
+        }
+
+        // 根据种类调整玩家跳跃幅度
+        this.isJumpSpring = (boardType === Const.BoardType.SPRING) ? true : false;
+
+        // 跳板撞击特效（下沉抖动、冲击波）
+        this.currBoard.setBump();
+        this.currBoard.setWave();
+        
+        if (boardType === Const.BoardType.SPRING || boardType === Const.BoardType.SPRINT) {
+            this.currBoard.setSpring();
+        }
+
+        let boardBoxCompo: BoardBox = GameScene.instance.boardBoxCompo;
+        let boardList: Board[] = boardBoxCompo.getBoardList();
+        if (boardType === Const.BoardType.DROP) {
+            for (let i: number = 0; i < this.currBoardIdx; i++) {
+                boardList[i].setDrop();
+            }
+        }
+
+        // // 更新镜头Y位置：与当前跳板Y位置绑定
+        // let camera: Laya.Camera = GameScene.instance.cameraBoxCompo.camera;
+        // let camPosY = boardPos.y + Const.CameraOffsetY;
+        // if (boardType !== Const.BoardType.SPRINT) {
+        //     if (this.preType === Const.BoardType.SPRING) {
+        //         Laya.Tween.to(camera.transform, {localPositionY: camPosY}, Const.CameraMoveYFramesSpring / 60 * 1000, Laya.Ease.linearInOut);
+        //     }
+        //     else {
+        //         Laya.Tween.to(camera.transform, {localPositionY: camPosY}, Const.CameraMoveYFrames / 60 * 1000, Laya.Ease.linearInOut);
+        //     }
+        // }
+
+        // 更新镜头Y位置：与当前跳板Y位置绑定
+        let camPosY = boardPos.y + Const.CameraOffsetY;
+        GameScene.instance.cameraBoxCompo.setDesPosY(camPosY);
+
+        // 记录前一个跳板状态
+        GameScene.instance.cameraBoxCompo.preType = boardType;
+    }
+
+    /** 创建新跳板 */
+    private newBoard() {
+        // 设置新跳板类型
+        let boardType: number;
+        // 难度曲线输出区间[1,10]
+        let diffCoeff: number = Util.getDiffCoeff(this.diffLevel, 1, 10);
+        let rand_type: number = Math.random() * diffCoeff;
+        if (rand_type <= 5) {
+            boardType = Const.BoardType.NORMAL;
+        }
+        else if (rand_type <= 5.8) {
+            boardType = Const.BoardType.SPRING;
+        }
+        else if (rand_type <= 7.5) {
+            boardType = Const.BoardType.DROP;
+        }
+        else if (rand_type <= 8) {
+            boardType = Const.BoardType.GIANT;
+        }
+        else if (rand_type <= 8.3) {
+            if (this.hasSprint === false) {
+                boardType = Const.BoardType.SPRINT;
+                this.hasSprint = true;
+                // 一旦冲刺，重置难度
+                //this.diffLevel = 10;
+            }
+            else {
+               boardType = Const.BoardType.NORMAL;
+            }
+        }
+        else {
+            boardType = Const.BoardType.NORMAL;
+        }
+        // 设置新跳板位置
+        let boardBoxCompo: BoardBox = GameScene.instance.boardBoxCompo;
+        boardBoxCompo.newBoard(boardType, this.diffLevel);
+    }
+
+    /** 设置Y位置：跟随跳跃周期坐标 */
+    private setPosY() {
+        // 向上跳跃
+        if (this.jumpState === Const.PlayerJumpState.JUMPUP) {
+            // 弹簧跳跃
+            if (this.isJumpSpring) {
+                this.player.transform.localPositionY += Const.PlayerJumpStepSpring[Math.floor(this.currJumpFrame / 3)];
+            }
+            // 常规跳跃
+            else {
+                this.player.transform.localPositionY += Const.PlayerJumpStep[Math.floor(this.currJumpFrame / 2)];
+            }
+        }
+        // 下落
+        else if (this.jumpState === Const.PlayerJumpState.FALLDOWN) {
+            // 弹簧跳跃,
+            if (this.currBoard.getType() === Const.BoardType.SPRING) {
+                // 当前跳板水平线以上, 原速返回
+                if (this.currJumpFrame < Const.PlayerJumpFramesSpring) {
+                    this.player.transform.localPositionY -= Const.PlayerJumpStepSpring[Math.floor((Const.PlayerJumpFramesSpring - this.currJumpFrame - 1) / 3)];
+                }
+                // 水平线以下, 保持最高下降速度
+                else {
+                    this.player.transform.localPositionY -= Const.PlayerJumpStepSpring[0];
+                }
+            }
+            // 常规跳跃, 当前跳板水平线以上, 原速返回
+            else if (this.currJumpFrame < Const.PlayerJumpFrames){
+                this.player.transform.localPositionY -= Const.PlayerJumpStep[Math.floor((Const.PlayerJumpFrames - this.currJumpFrame - 1) / 2)];
+            }
+            // 常规跳跃, 水平线以下, 保持最高下降速度
+            else {
+                this.player.transform.localPositionY -= Const.PlayerJumpStep[0];
+            }
+        }
+        // 冲刺跳跃
+        else if (this.jumpState === Const.PlayerJumpState.SPRINT) {
+            this.player.transform.localPositionY += Const.PlayerJumpStepSprint;
+            if (this.currJumpFrame >= Const.DiamondStartFrame + 20 && this.currJumpFrame <= Const.PlayerJumpFramesSprint - 50) {
+                if (this.currJumpFrame % Math.floor(Const.DiamondSprintStepY / Const.PlayerJumpStepSprint) === 0) {
+                    let boardBoxCompo: BoardBox = GameScene.instance.boardBoxCompo;
+                    boardBoxCompo.newDiamond();
+                }
+            }
+        }
+    }
+
+    /** 设置Z角度：跟随横向触摸幅度 */
+    private setRotZ() {
+        if (this.isTouch && this.touchPosX != Laya.stage.mouseX) {
+            let rotZ: number = (Laya.stage.mouseX - this.touchPosX) * Const.CoeffRotPlayer;
+            this.player.transform.localRotationEulerZ += rotZ;
+        }
+    }
+
+    /** 设置X位置：跟随横向触摸幅度 */
+    private setPosX() {
+        if (this.isTouch && this.touchPosX != Laya.stage.mouseX) {
+            // 冲刺跳跃
+            if (this.jumpState === Const.PlayerJumpState.SPRINT) {
+                let posX: number = (Laya.stage.mouseX - this.touchPosX) * Const.CoeffPosPlayer;
+                this.player.transform.localPositionX += posX;
+
+                // 修正玩家X位置，不超出屏幕
+                let playerPosX: number = this.player.transform.localPositionX;
+                let boundary: number = Const.SceneMaxOffsetX * 1.3;
+                if (playerPosX > this.currBoard.getPos().x + boundary) {
+                    this.player.transform.localPositionX = this.currBoard.getPos().x + boundary;
+                }
+                else if (playerPosX < this.currBoard.getPos().x - boundary) {
+                    this.player.transform.localPositionX = this.currBoard.getPos().x - boundary;
+                }
+            }
+            // 常规非冲刺跳跃
+            else {
+                let posX: number = (Laya.stage.mouseX - this.touchPosX) * Const.CoeffPosPlayer;
+                this.player.transform.localPositionX += posX;
+            }
+        }
+    }
+
+    /** 设置拖尾位置 */
+    private setTrailPos() {
+        this.playerTrail.transform.localPosition = this.player.transform.localPosition.clone();
+    }
+}

@@ -1,0 +1,54 @@
+import * as Const from "../Const";
+import wx from "../util/wx";
+
+export default class AudioManager extends Laya.Script {
+    static instance: AudioManager;
+
+    /**连击 */
+    private combo: number = 0;
+
+    /**缓存 */
+    private audioCache = {};
+
+    constructor() {
+        super();
+        AudioManager.instance = this;
+    }
+
+    // onEnable() {
+    //     for (let i = 0; i < 14; i++) {
+    //         this.loadAudioSound(i, "sounds/perfect" + i + ".mp3");
+    //     }
+    //     this.loadAudioSound(14, Const.AudioUrl.HitStair);
+    // }
+
+    /**
+    * 加载音频
+    * @param url 音频路径
+    */
+    private loadAudioSound(id: number, url: string) {
+        let sound = this.audioCache[id];
+        if (!sound) {
+            sound = Laya.Browser.onMiniGame ? new wx.createInnerAudioContext() : new Audio();
+            sound.src = url;
+            this.audioCache[id] = sound;
+        } else {
+            Laya.Browser.onMiniGame ? sound.stop() : sound.currentTime = 0;
+        }
+        return sound;
+    }
+
+    /**击中分数块音效 */
+    playSoundHitScore() {
+        if (this.combo > 13) this.combo = 13;
+        //this.loadAudioSound(this.combo, "sounds/perfect" + this.combo + ".mp3").play();
+        this.combo++;
+    }
+
+    /**击中楼梯音效 */
+    playSoundHitStair() {
+        //this.loadAudioSound(14, Const.AudioUrl.HitStair).play();
+        this.combo = 0;
+    }
+
+}

@@ -1,0 +1,221 @@
+import { ui } from "./../../ui/layaMaxUI";
+import GameScene from "./GameScene";
+import * as Const from "../Const";
+import wx from "../util/wx";
+import ws from "../util/ws.js";
+import Global from "../Global";
+import OverView from "./OverView";
+import Reward from "../component/Reward";
+import * as Ad from "../util/Ad";
+import * as Util from "../util/Util";
+
+export default class ReviveView extends ui.dialog.ReviveViewUI {
+    static instance: ReviveView;
+
+    /**
+     * 打开该单例页面，触发onOpened
+     * @param param  onOpened方法的传参
+     */
+    static openInstance(param?: any) {
+        if (ReviveView.instance) {
+            ReviveView.instance.onOpened(param);
+        } else {
+            Laya.Scene.open(Const.URL_ReviveView, false);
+        }
+    }
+
+    onOpened(param?: any) {
+        console.log("ReviveView onOpened()");
+        
+        if (Laya.Browser.onMiniGame && ws.isIPhoneX()) {
+            this.bottomButtonBox.bottom = 250 + Global.config.distance_iphonex || 0;
+        }
+
+        if (!this.isInitIcons && Laya.Browser.onMiniGame) {
+            this.isInitIcons = true;
+            this.initReiveIcons(["relive_icon1", "relive_icon2", "relive_icon3", "relive_icon4", "relive_icon5", "relive_icon6", "relive_icon7", "relive_icon8", "relive_icon9", "relive_icon10"]);
+        }
+        //广告延迟弹出
+        if (Global.config.online && Math.random() < Global.config.banner_delay_ratio1) {
+            this.buttonsDownAni.play(undefined, false);
+            Laya.timer.once((Global.config.banner_delay - 1 / 6) * 1000, this, () => {
+                Ad.posShowBanner(Const.BannerPos.ReviveDialog);
+                this.buttonsUpAni.play(undefined, false);
+            });
+        } else {
+            Ad.posShowBanner(Const.BannerPos.ReviveDialog);
+        }
+
+        this.shareButton.visible = Reward.instance.isOnline() && Reward.instance.allowShare();
+        this.resetCountdown();
+        this.visible = true;
+    }
+
+    /**是否初始化图标*/
+    private isInitIcons: boolean = false;
+    /**结束页图标列表*/
+    private iconInfosList: any[] = [];
+    /**当前显示结束页图标*/
+    private currentIconInfoList: any[] = [];
+    /**停止倒数 */
+    private stopped: boolean = false;
+    /**倒数计时 */
+    private countdownTimer: number = 0;
+    /**显示倒数的时间 */
+    private countdownNumber: number = 0;
+
+    constructor() {
+        super();
+        console.log("ReviveView constructor()");
+        ReviveView.instance = this;
+    }
+
+    onEnable() {
+        console.log("ReviveView onEnable()");
+        this.bindButtons();
+    }
+
+    private hide() {
+        Ad.posHideBanner(Const.BannerPos.ReviveDialog);
+        this.stopped = true;
+        this.visible = false;
+    }
+
+    /**按钮绑定事件 */
+    private bindButtons() {
+        this.skipButton.on(Laya.Event.MOUSE_DOWN, this, () => {
+            this.hide();
+            ws.traceEvent('Click_Skipnow');
+            GameScene.instance.gameOver();
+        });
+        this.shareButton.on(Laya.Event.MOUSE_DOWN, this, () => {
+            this.stopped = true;
+            Reward.instance.share({
+                pos: Const.RewardPos.Revive,
+                success: () => {
+                    this.hide();
+                    GameScene.instance.gameRevive();
+                },
+                complete: () => {
+                    this.stopped = false;
+                }
+            });
+        });
+        this.videoButton.on(Laya.Event.MOUSE_DOWN, this, () => {
+            this.stopped = true;
+            Reward.instance.video({
+                pos: Const.RewardPos.Revive,
+                success: () => {
+                    this.hide();
+                    GameScene.instance.gameRevive();
+                },
+                complete: () => {
+                    this.stopped = false;
+                }
+            });
+        });
+    }
+
+    /**重置倒计时 */
+    private resetCountdown() {
+        Laya.timer.clear(this, this.countdown);
+        this.countdownAni.isPlaying && this.countdownAni.stop();
+
+        this.countdownTimer = Const.ReviveCountdown;
+        this.countdownNumber = Const.ReviveCountdown;
+        this.stopped = false;
+
+        this.countdownLabel.changeText(this.countdownNumber + '');
+        Laya.timer.frameLoop(1, this, this.countdown)
+    }
+
+    /**倒计时 */
+    private countdown() {
+        let delta = Laya.timer.delta;
+        if (this.visible && !this.stopped) {
+            this.countdownTimer -= delta * 0.001;
+            if (this.countdownTimer < 0) {
+                this.hide();
+                GameScene.instance.gameOver();
+            } else {
+                let num = Math.floor(this.countdownTimer);
+                if (num !== this.countdownNumber) {
+                    this.countdownNumber = num;
+                    this.countdownLabel.changeText(this.countdownNumber + '');
+                    this.countdownAni.play(undefined, false);
+                }
+            }
+        }
+    }
+
+    /**图标点击*/
+    private onIconClick(pos: string, ad: any, redirect = true) {
+        ws.tapGameAd({ pos, ad, redirect });
+    }
+
+    /**初始化复活图标 */
+    private initReiveIcons(posList: string[]) {
+        if (!posList || !posList.length) {
+            return;
+        }
+        let fetchParams = [];
+        for (let pos of posList) {
+            let list = Global.config.games[pos];
+            let count = list && list.length ? list.length : 1;
+            fetchParams.push({ pos, count });
+        }
+        this.reviveIconList.renderHandler = Laya.Handler.create(this, (cell: Laya.Box, index: number) => {
+            let iconInfo = this.reviveIconList.array[index];
+            if (iconInfo) {
+                cell.visible = true;
+                //注册点击
+                cell.on(Laya.Event.MOUSE_DOWN, this, this.onIconClick, [posList[index], iconInfo]);
+                //图片
+                let iconImage = cell.getChildByName("iconImage") as Laya.Sprite;
+                iconImage && iconImage.loadImage(iconInfo.icon);
+                //名称
+                let titleLabel = cell.getChildByName("titleLabel") as Laya.Label;
+                titleLabel && titleLabel.changeText(iconInfo.title);
+                //抖动
+                Util.shakeOnce(Math.random() * 1000, cell);
+            } else {
+                cell.visible = false;
+            }
+        }, [], false);
+        ws.fetchGameAd({
+            data: fetchParams,
+            success: (res: any) => {
+                let data = res.data;
+                let iconInfosList = [];
+                for (let pos of posList) {
+                    iconInfosList.push(data[pos]);
+                }
+                this.iconInfosList = iconInfosList;
+                //当前显示图标
+                this.currentIconInfoList = [];
+                this.scheduleRefreshReviveIcons();
+            },
+        });
+    }
+
+    /**每隔三秒刷新一次*/
+    private scheduleRefreshReviveIcons() {
+        this.refreshReviveIcons();
+        Laya.timer.loop(3000, this, () => {
+            if (this.visible) {
+                this.refreshReviveIcons();
+            }
+        });
+    }
+
+    /**刷新结束页图标*/
+    private refreshReviveIcons() {
+        for (let i = 0; i < this.iconInfosList.length; i++) {
+            let iconInfos = this.iconInfosList[i];
+            let iconInfo = Util.getRandom(iconInfos);
+            this.currentIconInfoList[i] = iconInfo;
+        }
+        this.reviveIconList.array = this.currentIconInfoList;
+        this.reviveIconList.refresh();
+    }
+}
