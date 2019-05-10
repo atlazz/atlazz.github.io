@@ -136,6 +136,8 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     private renderMaze() {
         this.mazeBox.visible = true;
 
+        let cnt_barriers = 0;
+
         // 获取障碍物标识
         let barriersLabel: string = "";
         let flag = false;
@@ -182,6 +184,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 unit.texture = new Laya.Texture();
                 this.mazeBox.addChild(unit);
                 if (this.outMaze[i][j]) {
+                    cnt_barriers++;
                     unit.texture = Laya.loader.getRes("res/barriers_texture/" + this.barriersComboBox[i][j].selectedLabel + ".png");
                 }
                 else {
@@ -254,6 +257,8 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 });
             }
         }
+
+        this.barriersNumText.changeText("障碍物数量: " + cnt_barriers);
 
         // 渲染玩家
         this.player.width = this.unitWidth;

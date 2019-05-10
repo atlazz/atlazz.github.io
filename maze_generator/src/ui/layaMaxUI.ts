@@ -13,6 +13,7 @@ export module ui.test {
 		public mazeBox:Laya.Box;
 		public tutorialText:laya.display.Text;
 		public styleText:laya.display.Text;
+		public barriersNumText:laya.display.Text;
         constructor(){ super()}
         createChildren():void {
             super.createChildren();
