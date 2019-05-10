@@ -70,22 +70,22 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     // 初始化障碍物
     private loadRes() {
         this.barriersList = new Array<Array<string>>();
-        // format: 墙, 踢脚墙, 门, 窗
-        this.barriersList[0] = ["Wall_WoHor_11", "Wall_BotW1_11", "Door_24", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23"];
-        this.barriersList[1] = ["Wall_Hor1_11", "Wall_BotW1_11", "Door_24", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23"];
-        this.barriersList[2] = ["Wall_Hor2_11", "Wall_BotW1_11", "Door_24", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23"];
-        this.barriersList[3] = ["Wall_Hor2_11", "Wall_BotW2_11", "Door_B24", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23"];
-        this.barriersList[4] = ["Brick_Hor2_11", "Wall_BotB1_11", "Door_B24", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23"];
-        this.barriersList[5] = ["Wall_Hor2_11", "Wall_BotW2_11", "Door_B24", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23"];
-        this.barriersList[6] = ["Brick_Hor1_11", "Wall_BotB1_11", "Door_C24", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23"];
-        this.barriersList[7] = ["Brick_Hor2_11", "Wall_BotB1_11", "Door_C24", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23"];
-        this.barriersList[8] = ["Wall_Hor3_11", "Wall_BotW1_11", "Door_C24", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23"];
-        this.barriersList[9] = ["Brick_Hor2_11", "Wall_BotB1_11", "Door_G24", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23"];
-        this.barriersList[10] = ["Wall_WoHor_11", "Wall_BotB1_11", "Door_G24", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23"];
-        this.barriersList[11] = ["Brick_Hor1_11", "Wall_BotB1_11", "Door_G24", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23"];
-        this.barriersList[12] = ["Wall_Hor3_11", "Wall_BotW2_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
-        this.barriersList[13] = ["Wall_WoHor_11", "Wall_BotW1_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
-        this.barriersList[14] = ["Wall_Hor2_11", "Wall_BotW2_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
+        // format: 墙, 踢脚墙, 装饰物, 门, 窗
+        this.barriersList[0] = ["Wall_WoHor_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_24","Window_11","Window_12","Window_21","Window_22","Window_23"];
+        this.barriersList[1] = ["Wall_Hor1_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_24","Window_11","Window_12","Window_21","Window_22","Window_23"];
+        this.barriersList[2] = ["Wall_Hor2_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_24","Window_11","Window_12","Window_21","Window_22","Window_23"];
+        this.barriersList[3] = ["Wall_Hor2_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_B24","Window_B11","Window_B12","Window_B21","Window_B22","Window_B23"];
+        this.barriersList[4] = ["Brick_Hor2_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_B24","Window_B11","Window_B12","Window_B21","Window_B22","Window_B23"];
+        this.barriersList[5] = ["Wall_Hor2_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_B24","Window_B11","Window_B12","Window_B21","Window_B22","Window_B23"];
+        this.barriersList[6] = ["Brick_Hor1_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_C24","Window_C11","Window_C12","Window_C21","Window_C22","Window_C23"];
+        this.barriersList[7] = ["Brick_Hor2_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_C24","Window_C11","Window_C12","Window_C21","Window_C22","Window_C23"];
+        this.barriersList[8] = ["Wall_Hor3_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_C24","Window_C11","Window_C12","Window_C21","Window_C22","Window_C23"];
+        this.barriersList[9] = ["Brick_Hor2_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_G24","Window_G11","Window_G12","Window_G21","Window_G22","Window_G23"];
+        this.barriersList[10] = ["Wall_WoHor_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_G24","Window_G11","Window_G12","Window_G21","Window_G22","Window_G23"];
+        this.barriersList[11] = ["Brick_Hor1_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_G24","Window_G11","Window_G12","Window_G21","Window_G22","Window_G23"];
+        this.barriersList[12] = ["Wall_Hor3_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_W24","Window_W11","Window_W12","Window_W21","Window_W22","Window_W23"];
+        this.barriersList[13] = ["Wall_WoHor_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_W24","Window_W11","Window_W12","Window_W21","Window_W22","Window_W23"];
+        this.barriersList[14] = ["Wall_Hor2_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_W24","Window_W11","Window_W12","Window_W21","Window_W22","Window_W23"];
 
         for (let i = 0; i < 15; i++) {
             for (let item of this.barriersList[i]) {
