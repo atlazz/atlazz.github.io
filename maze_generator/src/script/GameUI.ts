@@ -47,8 +47,8 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         // 初始化场景
         this.initScene();
 
-        // 初始化障碍物风格组
-        this.initBarriers();
+        // 资源加载
+        this.loadRes();
 
         // 键盘操作监听
         this.keyboardListen();
@@ -68,7 +68,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     }
 
     // 初始化障碍物
-    private initBarriers() {
+    private loadRes() {
         this.barriersList = new Array<Array<string>>();
         // format: 墙, 踢脚墙, 门, 窗
         this.barriersList[0] = ["Wall_WoHor_11", "Wall_BotW1_11", "Door_24", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23"];
@@ -92,6 +92,9 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 Laya.loader.load("res/barriers_texture/" + item + ".png", null);
             }
         }
+        Laya.loader.load(this.url_empty, null);
+        Laya.loader.load(this.url_passed, null);
+        Laya.loader.load(this.url_player, null);
     }
 
     // 迷宫生成
@@ -176,7 +179,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     unit.texture = Laya.loader.getRes("res/barriers_texture/" + this.barriersComboBox[i][j].selectedLabel + ".png");
                 }
                 else {
-                    unit.texture.load(this.url_empty);
+                    unit.texture = Laya.loader.getRes(this.url_empty);
                 }
                 unit.texture.height = this.unitWidth;
                 unit.width = this.unitWidth;
@@ -251,7 +254,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         this.player.width = this.unitWidth;
         this.player.height = this.unitWidth;
         this.player.texture = new Laya.Texture();
-        this.player.texture.load(this.url_player);
+        this.player.texture = Laya.loader.getRes(this.url_player);
         this.player.x = this.maze.startX * this.unitWidth;
         this.player.y = this.maze.startY * this.unitWidth;
         this.mazeBox.addChild(this.player);
@@ -261,7 +264,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         this.idx_y = this.maze.startY;
 
         // 玩家所在位置涂色
-        this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
+        this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
     }
 
     // 键盘操作监听
@@ -305,7 +308,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         this.player.x -= this.unitWidth;
                         // 玩家位置涂色
                         if (this.mazeSprite[this.idx_x][this.idx_y].texture.url != this.url_passed) {
-                            this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
+                            this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
                         }
                     }
                 }
@@ -317,7 +320,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         this.player.y -= this.unitWidth;
                         // 玩家位置涂色
                         if (this.mazeSprite[this.idx_x][this.idx_y].texture.url != this.url_passed) {
-                            this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
+                            this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
                         }
                     }
                 }
@@ -329,7 +332,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         this.player.x += this.unitWidth;
                         // 玩家位置涂色
                         if (this.mazeSprite[this.idx_x][this.idx_y].texture.url != this.url_passed) {
-                            this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
+                            this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
                         }
                     }
                 }
@@ -341,7 +344,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         this.player.y += this.unitWidth;
                         // 玩家位置涂色
                         if (this.mazeSprite[this.idx_x][this.idx_y].texture.url != this.url_passed) {
-                            this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
+                            this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
                         }
                     }
                 }
@@ -352,7 +355,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         for (let j: number = 0; j < this.height; j++) {
                             if (!this.outMaze[i][j]) {
                                 if (this.mazeSprite[i][j].texture.url != this.url_empty) {
-                                    this.mazeSprite[i][j].texture.load(this.url_empty);
+                                     this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_empty);
                                 }
                             }
                         }
@@ -362,7 +365,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     this.idx_y = this.maze.startY;
                     this.player.x = this.idx_x * this.unitWidth;
                     this.player.y = this.idx_y * this.unitWidth;
-                    this.mazeSprite[this.idx_x][this.idx_y].texture.load(this.url_passed);
+                    this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
                 }
                 // print data
                 else if (e["keyCode"] === 80) {
