@@ -69,24 +69,23 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
     // 初始化障碍物
     private loadRes() {
-        this.barriersList = new Array<Array<string>>();
-        // format: 墙, 踢脚墙, 装饰物, 门, 窗
-        this.barriersList[0] = ["Wall_WoHor_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_24","Window_11","Window_12","Window_21","Window_22","Window_23"];
-        this.barriersList[1] = ["Wall_Hor1_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_24","Window_11","Window_12","Window_21","Window_22","Window_23"];
-        this.barriersList[2] = ["Wall_Hor2_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_24","Window_11","Window_12","Window_21","Window_22","Window_23"];
-        this.barriersList[3] = ["Wall_Hor2_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_B24","Window_B11","Window_B12","Window_B21","Window_B22","Window_B23"];
-        this.barriersList[4] = ["Brick_Hor2_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_B24","Window_B11","Window_B12","Window_B21","Window_B22","Window_B23"];
-        this.barriersList[5] = ["Wall_Hor2_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_B24","Window_B11","Window_B12","Window_B21","Window_B22","Window_B23"];
-        this.barriersList[6] = ["Brick_Hor1_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_C24","Window_C11","Window_C12","Window_C21","Window_C22","Window_C23"];
-        this.barriersList[7] = ["Brick_Hor2_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_C24","Window_C11","Window_C12","Window_C21","Window_C22","Window_C23"];
-        this.barriersList[8] = ["Wall_Hor3_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_C24","Window_C11","Window_C12","Window_C21","Window_C22","Window_C23"];
-        this.barriersList[9] = ["Brick_Hor2_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_G24","Window_G11","Window_G12","Window_G21","Window_G22","Window_G23"];
-        this.barriersList[10] = ["Wall_WoHor_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_G24","Window_G11","Window_G12","Window_G21","Window_G22","Window_G23"];
-        this.barriersList[11] = ["Brick_Hor1_11","Wall_BotB1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_G24","Window_G11","Window_G12","Window_G21","Window_G22","Window_G23"];
-        this.barriersList[12] = ["Wall_Hor3_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_W24","Window_W11","Window_W12","Window_W21","Window_W22","Window_W23"];
-        this.barriersList[13] = ["Wall_WoHor_11","Wall_BotW1_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_W24","Window_W11","Window_W12","Window_W21","Window_W22","Window_W23"];
-        this.barriersList[14] = ["Wall_Hor2_11","Wall_BotW2_11","Bush_11","Sponge_11","ElecBox_11","Mail_11","Plate_11","Pod_11","Pod_21","Went_11","Door_W24","Window_W11","Window_W12","Window_W21","Window_W22","Window_W23"];
-
+        this.barriersList = new Array<Array<string>>();// format: 墙, 踢脚墙, 装饰物, 门, 窗
+        this.barriersList[0] = ["Wall_WHor1_11", "Wall_BotW1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_24", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23"];
+        this.barriersList[1] = ["Wall_WHor2_11", "Wall_BotW1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_24", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23"];
+        this.barriersList[2] = ["Wall_WHor3_11", "Wall_BotW1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_24", "Window_11", "Window_12", "Window_21", "Window_22", "Window_23"];
+        this.barriersList[3] = ["Wall_WHor3_11", "Wall_BotW2_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_B24", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23"];
+        this.barriersList[4] = ["Wall_BHor2_11", "Wall_BotB1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_B24", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23"];
+        this.barriersList[5] = ["Wall_WHor3_11", "Wall_BotW2_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_B24", "Window_B11", "Window_B12", "Window_B21", "Window_B22", "Window_B23"];
+        this.barriersList[6] = ["Wall_BHor1_11", "Wall_BotB1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_C24", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23"];
+        this.barriersList[7] = ["Wall_BHor2_11", "Wall_BotB1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_C24", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23"];
+        this.barriersList[8] = ["Wall_WHor4_11", "Wall_BotW1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_C24", "Window_C11", "Window_C12", "Window_C21", "Window_C22", "Window_C23"];
+        this.barriersList[9] = ["Wall_BHor2_11", "Wall_BotB1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_G24", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23"];
+        this.barriersList[10] = ["Wall_WHor1_11", "Wall_BotB1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_G24", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23"];
+        this.barriersList[11] = ["Wall_BHor1_11", "Wall_BotB1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_G24", "Window_G11", "Window_G12", "Window_G21", "Window_G22", "Window_G23"];
+        this.barriersList[12] = ["Wall_WHor4_11", "Wall_BotW2_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
+        this.barriersList[13] = ["Wall_WHor1_11", "Wall_BotW1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
+        this.barriersList[14] = ["Wall_WHor3_11", "Wall_BotW2_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
+        
         for (let i = 0; i < 15; i++) {
             for (let item of this.barriersList[i]) {
                 Laya.loader.load("res/barriers_texture/" + item + ".png", null);
@@ -95,6 +94,11 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         Laya.loader.load(this.url_empty, null);
         Laya.loader.load(this.url_passed, null);
         Laya.loader.load(this.url_player, null);
+
+
+        this.player = new Laya.Sprite();
+        this.player.zOrder = 1;
+        this.mazeBox.addChild(this.player);
     }
 
     // 迷宫生成
@@ -147,7 +151,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
             this.mazeSprite.push(new Array<Laya.Sprite>());
             this.barriersComboBox.push(new Array<Laya.ComboBox>());
             for (let j: number = 0; j < this.height; j++) {
-                
+
                 // 资源下拉表
                 let comboBox: Laya.ComboBox = new Laya.ComboBox("comp/combobox.png", barriersLabel);
                 comboBox.width = 120;
@@ -250,21 +254,20 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         }
 
         // 渲染玩家
-        this.player = new Laya.Sprite();
         this.player.width = this.unitWidth;
         this.player.height = this.unitWidth;
-        this.player.texture = new Laya.Texture();
-        this.player.texture = Laya.loader.getRes(this.url_player);
         this.player.x = this.maze.startX * this.unitWidth;
         this.player.y = this.maze.startY * this.unitWidth;
-        this.mazeBox.addChild(this.player);
 
         // 玩家位置记录
         this.idx_x = this.maze.startX;
         this.idx_y = this.maze.startY;
 
-        // 玩家所在位置涂色
-        this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
+        if (this.diff >= 0) {
+            this.player.texture = Laya.loader.getRes(this.url_player);
+            // 玩家所在位置涂色
+            this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
+        }
     }
 
     // 键盘操作监听
@@ -355,7 +358,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         for (let j: number = 0; j < this.height; j++) {
                             if (!this.outMaze[i][j]) {
                                 if (this.mazeSprite[i][j].texture.url != this.url_empty) {
-                                     this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_empty);
+                                    this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_empty);
                                 }
                             }
                         }
@@ -418,6 +421,13 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
         let data: string = "{";
         data += "\n\tx:" + this.width + ",\n\ty:" + this.height + ",";
+
+        if (this.diff < 0) {
+            data += "\n\tplayable:false,";
+        }
+        else {
+            data += "\n\tplayable:true,";
+        }
 
         let flag = false;
         data += "\n\tbarriersArr:[";

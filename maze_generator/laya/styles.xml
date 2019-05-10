@@ -52,4 +52,12 @@
    <item name="res/barriers_texture/Wall_WoHor_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="res/barriers_texture/Wall_WoVer_11r.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="res/barriers_texture/Wall_WoVer_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_BHor1_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_BHor2_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_WHor1_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_WHor2_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_WHor3_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_WHor4_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_WVer1_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="res/barriers_texture/Wall_Wver2_11.png" type="Sprite" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
 </res>

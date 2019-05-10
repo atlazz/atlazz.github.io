@@ -44,9 +44,6 @@ R 75DDAACF passed.png
 R 19DFA662 player.png
 R 8635D001 wall.png
 D res/barriers_texture
-R E06DC5CF Brick_Hor1_11.png
-R 44407D6A Brick_Hor2_11.png
-R 517D94EE Brick_Ver1_11.png
 R F91C86FB Bush_11.png
 R 41686793 Door_24.png
 R C2EA58B4 Door_B24.png
@@ -59,14 +56,17 @@ R 88A3438F Plate_11.png
 R DB4163EA Pod_11.png
 R DB4163EA Pod_21.png
 R 50469A8D Sponge_11.png
+R E06DC5CF Wall_BHor1_11.png
+R 44407D6A Wall_BHor2_11.png
 R D89445F4 Wall_BotB1_11.png
 R 6D8C3EED Wall_BotW1_11.png
 R 91399FC2 Wall_BotW2_11.png
-R BB21E322 Wall_Hor1_11.png
-R 533C7DB7 Wall_Hor2_11.png
-R 1F9C60E7 Wall_Hor3_11.png
-R F5BF34BC Wall_WoHor_11.png
-R 0B09886C Wall_WoVer_11.png
+R F5BF34BC Wall_WHor1_11.png
+R BB21E322 Wall_WHor2_11.png
+R 533C7DB7 Wall_WHor3_11.png
+R 1F9C60E7 Wall_WHor4_11.png
+R 0B09886C Wall_WVer1_11.png
+R 517D94EE Wall_Wver2_11.png
 R 399A4A2B Went_11.png
 R 2D1FF0E5 Window_11.png
 R 27720EAC Window_12.png

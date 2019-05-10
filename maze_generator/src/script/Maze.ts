@@ -58,6 +58,18 @@ export default class Maze {
         this.startX = x;
         this.startY = y;
 
+        // 第四面墙, 不可玩
+        if (this.minCount < 0) {
+            // 重置迷宫所有单元格状态
+            for (let i: number = 0; i < this.width; i++) {
+                for (let j: number = 0; j < this.height; j++) {
+                    this.maze[i][j] = "wall";
+                    this.outMaze[i][j] = true;
+                }
+            }
+            return true;
+        }
+        
         // 重置迷宫所有单元格状态
         for (let i: number = 0; i < this.width; i++) {
             for (let j: number = 0; j < this.height; j++) {
