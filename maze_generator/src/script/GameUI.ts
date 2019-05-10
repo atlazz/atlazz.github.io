@@ -503,7 +503,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         }
         data += "],";
 
-        data += "\n\tplayer_pos:\"" + this.maze.startX + "," + this.maze.startY + "\",";
+        data += "\n\tplayer_pos:\"" + this.maze.startX + "," + (this.height - this.maze.startY - 1) + "\",";
         data += "\n}";
 
         console.log(data);
