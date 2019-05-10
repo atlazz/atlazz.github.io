@@ -19,9 +19,9 @@ export const URL_PlayerMaterialCat: string = "res/texture/game/cat.png";
 export const URL_PlayerTexture1: string = "res/texture/game/ball05.png";
 export const URL_PlayerTexture2: string = "res/texture/game/ball03.png";
 /**跳板模型 */
-export const URL_BoardMesh: string = "res/model/game/cylinder.lm";
+export const URL_BoardMesh: string = "res/model/game/board.lm";
 /**跳板模型材质 */
-export const URL_BoardMaterial: string = "res/texture/game/cylinder.jpg";
+export const URL_BoardMaterial: string = "res/texture/game/2.png";
 /**弹簧螺旋模型 */
 export const URL_HelixMesh: string = "res/model/game/helix.lm";
 /**冲击波材质 */

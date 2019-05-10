@@ -8,8 +8,15 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
     // 迷宫
     private maze: Maze;
-    // 迷宫矩阵
+
+    // 输入迷宫矩阵, 记录迷宫状态，每个单元格状态有 0: undefined, 1: wall, 2: empty 三种
+    private inMaze: Array<Array<number>> = new Array<Array<number>>();
+    // 输出迷宫矩阵
     private outMaze: Array<Array<boolean>>;
+
+    // 切换渲染所需矩阵数据
+    private flag_InOut: string = "inMaze";
+
     // 迷宫节点
     private mazeSprite: Array<Array<Laya.Sprite>> = new Array<Array<Laya.Sprite>>();
     // 迷宫单元图片尺寸
@@ -29,6 +36,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     // 图片路径
     private url_player: string = "res/player.png";
     private url_empty: string = "res/empty.png";
+    private url_wall: string = "res/wall.png";
     private url_passed: string = "res/passed.png";
 
     // 障碍物资源列表组
@@ -96,19 +104,25 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
             }
         }
         Laya.loader.load(this.url_empty, null);
+        Laya.loader.load(this.url_wall, null);
         Laya.loader.load(this.url_passed, null);
         Laya.loader.load(this.url_player, null);
 
         this.player = new Laya.Sprite();
         this.player.zOrder = 1;
+
+        // 重置输入矩阵
+        this.inMaze = new Array<Array<number>>();
+        for (let i: number = 0; i < this.width; i++) {
+            this.inMaze.push(new Array<number>());
+            for (let j: number = 0; j < this.height; j++) {
+                this.inMaze[i].push(0);
+            }
+        }
     }
 
     // 迷宫生成
     private generateMaze() {
-        // 设置迷宫参数
-        this.unitWidth = (this.stage.width - this.mazeBox.x * 2) / this.width;
-        this.unitWidth = this.unitWidth > 100 ? 100 : this.unitWidth;
-
         // 生成迷宫矩阵
         this.maze = new Maze(this.width, this.height, this.diff);
         let x: number = Math.floor(Math.random() * this.width);
@@ -116,7 +130,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         let tryTimes: number = 0;
 
         console.log("Maze generating...");
-        while (!this.maze.generate(x, y) && tryTimes < this.maxTryTimes) {
+        while (!this.maze.generate(x, y, this.inMaze) && tryTimes < this.maxTryTimes) {
             x = Math.floor(Math.random() * this.width);
             y = Math.floor(Math.random() * this.height);
             tryTimes++;
@@ -127,6 +141,8 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         }
         console.log("Done. Try times: " + tryTimes);
         this.outMaze = this.maze.getMaze();
+
+        this.flag_InOut = "outMaze";
 
         // 渲染迷宫及玩家
         this.renderMaze();
@@ -146,50 +162,58 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
             flag = true;
             barriersLabel += item;
         }
+        this.barriersComboBox = new Array<Array<Laya.ComboBox>>();
 
         // 渲染迷宫
         this.mazeSprite = new Array<Array<Laya.Sprite>>();
-        this.barriersComboBox = new Array<Array<Laya.ComboBox>>();
         // 初始化迷宫单元
         for (let i: number = 0; i < this.width; i++) {
             this.mazeSprite.push(new Array<Laya.Sprite>());
             this.barriersComboBox.push(new Array<Laya.ComboBox>());
             for (let j: number = 0; j < this.height; j++) {
 
-                // 资源下拉表
-                let comboBox: Laya.ComboBox = new Laya.ComboBox("comp/combobox.png", barriersLabel);
-                comboBox.width = 120;
-                comboBox.height = 25;
-                comboBox.x = i * this.unitWidth;
-                comboBox.y = j * this.unitWidth;
-                // comboBox.zOrder = 1;
-                comboBox.visibleNum = 20;
-                comboBox.visible = false;
-                // 下拉列表内滚动条
-                comboBox.scrollBarSkin = "comp/vscroll.png";
-                comboBox.scrollBar.scaleX /= 2;
-                // 默认选择墙面
-                if (j === this.height - 1) {
-                    comboBox.selectedIndex = 1;
-                }
-                else {
-                    comboBox.selectedIndex = 0;
-                }
+                if (this.flag_InOut === "outMaze") {
+                    // 资源下拉表
+                    let comboBox: Laya.ComboBox = new Laya.ComboBox("comp/combobox.png", barriersLabel);
+                    comboBox.width = 120;
+                    comboBox.height = 25;
+                    comboBox.x = i * this.unitWidth;
+                    comboBox.y = j * this.unitWidth;
+                    // comboBox.zOrder = 1;
+                    comboBox.visibleNum = 20;
+                    comboBox.visible = false;
+                    // 下拉列表内滚动条
+                    comboBox.scrollBarSkin = "comp/vscroll.png";
+                    comboBox.scrollBar.scaleX /= 2;
+                    // 默认选择墙面
+                    if (j === this.height - 1) {
+                        comboBox.selectedIndex = 1;
+                    }
+                    else {
+                        comboBox.selectedIndex = 0;
+                    }
 
-                this.mazeBox.addChild(comboBox);
-                this.barriersComboBox[i].push(comboBox);
+                    this.mazeBox.addChild(comboBox);
+                    this.barriersComboBox[i].push(comboBox);
+                }
 
                 // 显示节点
                 let unit: Laya.Sprite = new Laya.Sprite();
                 unit.texture = new Laya.Texture();
                 this.mazeBox.addChild(unit);
-                if (this.outMaze[i][j]) {
+
+                if (this.flag_InOut === "inMaze") {
+                    unit.texture = Laya.loader.getRes(this.url_passed);
+                }
+                else if (this.outMaze[i][j]) {
                     cnt_barriers++;
                     unit.texture = Laya.loader.getRes("res/barriers_texture/" + this.barriersComboBox[i][j].selectedLabel + ".png");
                 }
                 else {
                     unit.texture = Laya.loader.getRes(this.url_empty);
                 }
+
+                unit.texture.width = this.unitWidth;
                 unit.texture.height = this.unitWidth;
                 unit.width = this.unitWidth;
                 unit.height = this.unitWidth;
@@ -200,7 +224,21 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 // 鼠标监听
                 this.mazeSprite[i][j].on(Laya.Event.MOUSE_UP, this, () => {
                     this.posLabel.changeText("坐标: (" + i + "," + (this.height - j - 1) + ")");
-                    if (this.outMaze[i][j]) {
+                    // 输入矩阵
+                    if (this.flag_InOut === "inMaze") {
+                        this.inMaze[i][j] = (this.inMaze[i][j] + 1) % 3;
+                        if (this.inMaze[i][j] === 0) {
+                            this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_passed);
+                        }
+                        else if (this.inMaze[i][j] === 1) {
+                            this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_wall);
+                        }
+                        else if (this.inMaze[i][j] === 2) {
+                            this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_empty);
+                        }
+                    }
+                    // 输出矩阵
+                    else if (this.flag_InOut === "outMaze" && this.outMaze[i][j]) {
                         this.barriersComboBox[i][j].visible = true;
                         // 切换层级
                         let flag_zOrder: number = this.mazeSprite[i][j].zOrder - this.barriersComboBox[i][j].zOrder;
@@ -260,21 +298,23 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
         this.barriersNumText.changeText("障碍物数量: " + cnt_barriers);
 
-        // 渲染玩家
-        this.player.width = this.unitWidth;
-        this.player.height = this.unitWidth;
-        this.player.x = this.maze.startX * this.unitWidth;
-        this.player.y = this.maze.startY * this.unitWidth;
+        if (this.flag_InOut === "outMaze") {
+            // 渲染玩家
+            this.player.width = this.unitWidth;
+            this.player.height = this.unitWidth;
+            this.player.x = this.maze.startX * this.unitWidth;
+            this.player.y = this.maze.startY * this.unitWidth;
 
-        // 玩家位置记录
-        this.idx_x = this.maze.startX;
-        this.idx_y = this.maze.startY;
+            // 玩家位置记录
+            this.idx_x = this.maze.startX;
+            this.idx_y = this.maze.startY;
 
-        if (this.diff >= 0) {
-            // 玩家所在位置涂色
-            this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
-            this.player.texture = Laya.loader.getRes(this.url_player);
-            this.mazeBox.addChild(this.player);
+            if (this.diff >= 0) {
+                // 玩家所在位置涂色
+                this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
+                this.player.texture = Laya.loader.getRes(this.url_player);
+                this.mazeBox.addChild(this.player);
+            }
         }
     }
 
@@ -286,6 +326,45 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
             if (this.cnt_loader < this.barriersStyleNum) {
                 console.log("资源加载未完成, 当前进度: " + this.cnt_loader + "/" + this.barriersStyleNum);
                 return;
+            }
+            // console.log(e["keyCode"])
+            // set maze coeff
+            if (e["keyCode"] === 83) {
+                if (!this.widthInput.text || !this.heightInput.text || !this.diffInput.text) {
+                    return;
+                }
+
+                // 重置
+                if (this.mazeSprite.length !== 0) {
+                    for (let i: number = 0; i < this.mazeSprite.length; i++) {
+                        for (let j: number = 0; j < this.mazeSprite[i].length; j++) {
+                            this.mazeBox.removeChild(this.mazeSprite[i][j]);
+                            this.mazeBox.removeChild(this.barriersComboBox[i][j]);
+                        }
+                    }
+                    this.mazeBox.removeChild(this.player);
+                }
+
+                this.width = +this.widthInput.text;
+                this.height = +this.heightInput.text;
+                this.diff = +this.diffInput.text > this.width * this.height - 3 ? this.width * this.height - 3 : +this.diffInput.text;
+
+                // 设置迷宫参数
+                this.unitWidth = (this.stage.width - this.mazeBox.x * 2) / this.width;
+                this.unitWidth = this.unitWidth > 100 ? 100 : this.unitWidth;
+
+                // 重置迷宫所有单元格状态
+                this.inMaze = new Array<Array<number>>();
+                for (let i: number = 0; i < this.width; i++) {
+                    this.inMaze.push(new Array<number>());
+                    for (let j: number = 0; j < this.height; j++) {
+                        this.inMaze[i].push(0);
+                    }
+                }
+
+                this.flag_InOut = "inMaze";
+
+                this.renderMaze();
             }
             // generate maze
             if (e["keyCode"] === 71) {
@@ -312,6 +391,11 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 this.width = +this.widthInput.text;
                 this.height = +this.heightInput.text;
                 this.diff = +this.diffInput.text > this.width * this.height - 3 ? this.width * this.height - 3 : +this.diffInput.text;
+
+                // 设置迷宫参数
+                this.unitWidth = (this.stage.width - this.mazeBox.x * 2) / this.width;
+                this.unitWidth = this.unitWidth > 100 ? 100 : this.unitWidth;
+
                 this.generateMaze();
             }
             if (this.outMaze) {

@@ -33,7 +33,7 @@ export default class BoardBox extends Laya.Script {
         this.initDiamond();
     }
 
-    /** 初始化钻石组 */
+    /** 初始化跳板 */
     private initBoard() {
         // Laya.Mesh.load(Const.URL_BoardMesh, Laya.Handler.create(this, (mesh) => {
         //     let boardMesh: Laya.MeshSprite3D = new Laya.MeshSprite3D(mesh);
@@ -41,7 +41,6 @@ export default class BoardBox extends Laya.Script {
         //     Laya.loader.create(Const.URL_BoardMaterial, Laya.Handler.create(this, (res) => {
         //         let material: Laya.BlinnPhongMaterial = new Laya.BlinnPhongMaterial();
         //         material.albedoTexture = res;
-        //         material.specularColor = new Laya.Vector4(0, 0, 0, 0);
         //         boardMesh.meshRenderer.material = material;
         //     }));
 

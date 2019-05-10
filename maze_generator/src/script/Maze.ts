@@ -53,7 +53,12 @@ export default class Maze {
      *  Input - 起点坐标(x,y)
      *  Output - 生成状态：生成成功为 true
      * */
-    generate(x: number, y: number): boolean {
+    generate(x: number, y: number, inMaze: number[][]): boolean {
+        // 起点与墙重合
+        if (inMaze[x][y] === 1) {
+            return false;
+        }
+
         // 记录起点
         this.startX = x;
         this.startY = y;
@@ -69,11 +74,19 @@ export default class Maze {
             }
             return true;
         }
-        
+
         // 重置迷宫所有单元格状态
         for (let i: number = 0; i < this.width; i++) {
             for (let j: number = 0; j < this.height; j++) {
-                this.maze[i][j] = "undefined";
+                if (inMaze[i][j] === 0) {
+                    this.maze[i][j] = "undefined";
+                }
+                else if (inMaze[i][j] === 1) {
+                    this.maze[i][j] = "wall";
+                }
+                else if (inMaze[i][j] === 1) {
+                    this.maze[i][j] = "empty";
+                }
                 this.outMaze[i][j] = true;
             }
         }
@@ -113,19 +126,19 @@ export default class Maze {
         this.directionList.length = 0;
         if (x > 0 && this.maze[x - 1][y] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "right" && this.solution[this.solution.length - 2] === "left"))
-            this.directionList.push("left");
+                this.directionList.push("left");
         }
         if (x < this.width - 1 && this.maze[x + 1][y] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "left" && this.solution[this.solution.length - 2] === "right"))
-            this.directionList.push("right");
+                this.directionList.push("right");
         }
         if (y > 0 && this.maze[x][y - 1] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "down" && this.solution[this.solution.length - 2] === "up"))
-            this.directionList.push("up");
+                this.directionList.push("up");
         }
         if (y < this.height - 1 && this.maze[x][y + 1] !== "wall") {
             if (this.solution && !(this.solution[this.solution.length - 1] === "up" && this.solution[this.solution.length - 2] === "down"))
-            this.directionList.push("down");
+                this.directionList.push("down");
         }
         // 若四面皆为墙，则生成失败，该情况理应不存在
         if (!this.directionList) {

@@ -59,6 +59,7 @@ D res/sounds
 R 0AEC2023 TheFatRat.mp3
 D res/texture
 D res/model/game
+R 0D62D295 board.lm
 R 8A1D9D8D cat.lm
 R C2C87AD8 diamond.lm
 R C33056AD diamond_piece.lm
@@ -69,6 +70,7 @@ R FA1DF3AF particleSprint_blue.lh
 R 44562495 particleSprint_red.lh
 R 0EAC4F29 trail.lh
 D res/texture/game
+R 039C70C0 2.png
 R E5019458 ball01.png
 R 5630E475 ball02.png
 R C8C0B18F ball03.png
