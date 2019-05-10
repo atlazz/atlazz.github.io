@@ -3,15 +3,10 @@ import GameScene from "../runtime/GameScene";
 import BoardBox from "../component/BoardBox";
 import Board from "../component/Board";
 import * as Util from "../util/Util";
-import HomeView from "../runtime/HomeView";
 
 export default class Player extends Laya.Script {
     /**玩家 */
-    private player: Laya.Sprite3D;
-    /**玩家模型 */
-    private playerMesh: Laya.MeshSprite3D;
-    /**玩家模型类型 */
-    private playerMeshType: number;
+    private player: Laya.MeshSprite3D;
     /**玩家拖尾 */
     private playerTrail: Laya.TrailSprite3D;
     // /** 钻石碎片组 */
@@ -75,8 +70,12 @@ export default class Player extends Laya.Script {
 
     onAwake() {
         console.log("Player onAwake()");
-        this.player = this.owner as Laya.Sprite3D;
-        this.init();
+        this.player = this.owner as Laya.MeshSprite3D;
+        this.registerListener();
+        this.reset();
+        this.initTrail();
+        this.initDiamondParticle();
+        this.initScore();
     }
 
     /**注册监听 */
@@ -96,38 +95,45 @@ export default class Player extends Laya.Script {
         this.isTouch = false;
     }
 
-    /**初始化 */
-    private init() {
-        // 注册监听
-        this.registerListener();
-
-        // 初始化拖尾
-        this.initTrail();
-
-        // 初始化玩家模型
-        this.playerMeshType = Const.PlayerMeshType.CAT;
-        this.loadPlayerMesh();
-
-        // 初始化玩家配置
-        this.reset();
-
-        // 初始化粒子
-        this.initDiamondParticle();
-
-        // 初始化分数
-        this.initScore();
-    }
-
     /**初始化拖尾 */
     private initTrail() {
-        Laya.TrailSprite3D.load(Const.URL_Trail, Laya.Handler.create(this, (res) => {
-            this.playerTrail = res as Laya.TrailSprite3D;
-            // 设置拖尾颜色
-            this.playerTrail.trailFilter.colorGradient.updateColorRGB(0, 0, Const.TrailColor[this.playerMeshType]);
-            this.playerTrail.trailFilter.colorGradient.updateColorRGB(1, 1, Const.TrailColor[this.playerMeshType]);
-            // 位置与玩家绑定
-            this.player.addChild(this.playerTrail);
-        }));
+        this.playerTrail = new Laya.TrailSprite3D();
+
+        // 设置拖尾过滤器
+        this.playerTrail.trailFilter.time = 0.7;
+        //this.playerTrail.trailFilter.minVertexDistance = 0.01;
+        this.playerTrail.trailFilter.alignment = Laya.TrailFilter.ALIGNMENT_VIEW;
+
+        // 设置宽度曲线
+        let trailWidthCurve: Array<Laya.FloatKeyframe> = new Array<Laya.FloatKeyframe>();
+        let widthKeyframeNum: number = 10;
+        this.playerTrail.trailFilter.widthMultiplier = 0.95;
+        for (let i: number = 0; i <= widthKeyframeNum; i++) {
+            trailWidthCurve[i] = new Laya.FloatKeyframe();
+            trailWidthCurve[i].time = this.playerTrail.trailFilter.time * i / widthKeyframeNum;
+            trailWidthCurve[i].value = this.playerTrail.trailFilter.widthMultiplier * (1 - i / widthKeyframeNum);
+            trailWidthCurve[i].inTangent = 0;   // ps: 两项设置为5, 微信上会是鱼尾巴...
+            trailWidthCurve[i].outTangent = 0;
+        }
+        this.playerTrail.trailFilter.widthCurve = trailWidthCurve;
+
+        // 设置颜色梯度
+        this.playerTrail.trailFilter.colorGradient.updateColorAlpha(0, 0, 1);
+        this.playerTrail.trailFilter.colorGradient.updateColorAlpha(1, 1, 0);
+        // this.playerTrail.trailFilter.colorGradient.updateColorRGB(0, 0, new Laya.Color(0.7, 0.7, 0.7, 1));
+        // this.playerTrail.trailFilter.colorGradient.updateColorRGB(1, 1, new Laya.Color(1, 1, 1, 1));
+
+        // 设置拖尾渲染器
+        let trailMat: Laya.TrailMaterial = new Laya.TrailMaterial();
+        trailMat.color = new Laya.Vector4(1, 1, 1, 0.2);
+        trailMat.renderMode = Laya.TrailMaterial.RENDERMODE_ALPHABLENDED;
+        this.playerTrail.trailRenderer.material = trailMat;
+
+        // 设置拖尾位置
+        this.setTrailPos();
+
+        // 添加到场景
+        this.player.parent.addChild(this.playerTrail);
     }
 
     /** 初始化钻石碎片粒子 */
@@ -146,76 +152,14 @@ export default class Player extends Laya.Script {
         }
     }
 
-    /**加载玩家模型 */
-    private loadPlayerMesh() {
-        // 加载
-        Laya.Mesh.load(Const.URL_PlayerModel[this.playerMeshType], Laya.Handler.create(this, (mesh) => {
-            // 模型
-            this.playerMesh = this.owner.addChild(new Laya.MeshSprite3D(mesh)) as Laya.MeshSprite3D;
-            // 材质设置
-            Laya.loader.create(Const.URL_PlayerMaterial[this.playerMeshType], Laya.Handler.create(this, (mat) => {
-                let material: Laya.BlinnPhongMaterial = new Laya.BlinnPhongMaterial();
-                material.albedoTexture = mat;
-                material.specularColor = new Laya.Vector4(0, 0, 0, 0);
-                this.playerMesh.meshRenderer.material = material;
-            }));
-            // 设置尺寸
-            this.playerMesh.transform.localScale = new Laya.Vector3(1.5, 1.5, 1.5);
-        }));
-    }
-
-    /**改变玩家模型 */
-    changePlayer(newPlayerMeshType: number) {
-        // 改变玩家模型
-        if (this.playerMeshType !== newPlayerMeshType) {
-            // 一样的模型不重新加载
-            if (Const.URL_PlayerModel[this.playerMeshType] === Const.URL_PlayerModel[newPlayerMeshType]) {
-                this.playerMeshType = newPlayerMeshType;
-                // 改变材质
-                Laya.loader.create(Const.URL_PlayerMaterial[this.playerMeshType], Laya.Handler.create(this, (mat) => {
-                    (this.playerMesh.meshRenderer.material as Laya.BlinnPhongMaterial).albedoTexture = mat;
-                }));
-            }
-            // 重新加载模型
-            else {
-                this.playerMeshType = newPlayerMeshType;
-                // 销毁
-                this.playerMesh.destroy(true);
-                // 加载模型: 球体用Laya原生创建
-                if (Const.URL_PlayerModel[this.playerMeshType] === "ball") {
-                    // 模型
-                    this.playerMesh = new Laya.MeshSprite3D(Laya.PrimitiveMesh.createSphere(Const.PlayerRadius));
-                    this.owner.addChild(this.playerMesh);
-                    // 材质设置
-                    Laya.loader.create(Const.URL_PlayerMaterial[this.playerMeshType], Laya.Handler.create(this, (mat) => {
-                        let material: Laya.BlinnPhongMaterial = new Laya.BlinnPhongMaterial();
-                        material.albedoTexture = mat;
-                        material.specularColor = new Laya.Vector4(0, 0, 0, 0);
-                        this.playerMesh.meshRenderer.material = material;
-                    }));
-                }
-                // 其余特殊模型, 加载读取
-                else {
-                    this.loadPlayerMesh();
-                }
-            }
-            // 设置拖尾颜色
-            this.playerTrail.trailFilter.colorGradient.updateColorRGB(0, 0, Const.TrailColor[this.playerMeshType]);
-            this.playerTrail.trailFilter.colorGradient.updateColorRGB(1, 1, Const.TrailColor[this.playerMeshType]);
-        }
-    }
-
     reset() {
-        // 重置玩家位置
+        // 重置难度
+        this.diffLevel = 1;
+        // 重置位置
         let initPos: Laya.Vector3 = Const.BoardInitPos.clone();
         initPos.y += Const.PlayerRadius + Const.BoardHeight / 2 - 0.001;
         this.player.transform.localPosition = initPos;
         this.player.transform.localRotationEuler = new Laya.Vector3(0, 0, 0);
-        // 激活玩家
-        this.show();
-
-        // 重置难度
-        this.diffLevel = 1;
         // 重置跳跃周期
         this.currJumpFrame = 0;
         // 重置跳跃类型
@@ -223,7 +167,8 @@ export default class Player extends Laya.Script {
         this.hasSprint = false;
         // 重置当前跳板索引
         this.currBoardIdx = 0;
-
+        // 激活玩家
+        this.show();
         // 切换粒子
         if (this.diamondParticleList[0]) {
             let idx: number = GameScene.instance.skyCount % GameScene.instance.skyNum;
@@ -240,7 +185,7 @@ export default class Player extends Laya.Script {
     revive() {
         // 重置死亡前最后跳板
         this.currBoardIdx--;
-        if (this.currBoard.getType() === Const.BoardType.SUPERMAN) {
+        if (this.currBoard.getType() === Const.BoardType.SPRINT) {
             this.currBoardIdx++;
             this.currBoard = GameScene.instance.boardBoxCompo.getBoardList()[this.currBoardIdx];
         }
@@ -262,7 +207,7 @@ export default class Player extends Laya.Script {
         GameScene.instance.cameraBoxCompo.setDesPosY(camPosY);
     }
 
-    getPlayer(): Laya.Sprite3D {
+    getPlayer(): Laya.MeshSprite3D {
         return this.player;
     }
 
@@ -303,10 +248,8 @@ export default class Player extends Laya.Script {
                 for (let i: number = 0; i < Const.DiamondNum; i++) {
                     if (Math.abs(this.player.transform.localPositionY - diamondList[i].transform.localPositionY) <= Const.DiamondSprintScoreArea) {
                         if (Math.abs(this.player.transform.localPositionX - diamondList[i].transform.localPositionX) <= Const.DiamondSprintScoreArea) {
-                            // GameScene.instance.addScore(Const.DiamondScore);
-                            // this.showScore(Const.DiamondScore);
-                            GameScene.instance.addDiamond(1);
-                            // this.showScoreDiamond(1);
+                            GameScene.instance.addScore(Const.DiamondScore);
+                            this.showScore(Const.DiamondScore);
                             diamondList[i].active = false;
                             // 发射粒子
                             this.diamondParticleSprint.particleSystem.play();
@@ -398,7 +341,7 @@ export default class Player extends Laya.Script {
 
 
                 /** 4.镜头X位置更新：与玩家X位置绑定 */
-                if (this.currBoard.getType() !== Const.BoardType.SUPERMAN) {
+                if (this.currBoard.getType() !== Const.BoardType.SPRINT) {
                     let camPosX = this.player.transform.localPositionX;
                     GameScene.instance.cameraBoxCompo.setDesPosX(camPosX);
                 }
@@ -408,6 +351,9 @@ export default class Player extends Laya.Script {
                     this.touchPosX = Laya.stage.mouseX;
                 }
             }
+
+            // 设置拖尾位置
+            this.setTrailPos();
         }
     }
 
@@ -455,7 +401,7 @@ export default class Player extends Laya.Script {
         // 重置玩家跳跃周期
         this.currJumpFrame = 0;
         // 重置玩家跳跃状态
-        if (boardType === Const.BoardType.SUPERMAN) {
+        if (boardType === Const.BoardType.SPRINT) {
             // 冲刺上升
             this.jumpState = Const.PlayerJumpState.SPRINT;
 
@@ -502,7 +448,7 @@ export default class Player extends Laya.Script {
         this.currBoard.setBump();
         this.currBoard.setWave();
 
-        if (boardType === Const.BoardType.SPRING || boardType === Const.BoardType.SUPERMAN) {
+        if (boardType === Const.BoardType.SPRING || boardType === Const.BoardType.SPRINT) {
             this.currBoard.setSpring();
         }
 
@@ -517,7 +463,7 @@ export default class Player extends Laya.Script {
         // // 更新镜头Y位置：与当前跳板Y位置绑定
         // let camera: Laya.Camera = GameScene.instance.cameraBoxCompo.camera;
         // let camPosY = boardPos.y + Const.CameraOffsetY;
-        // if (boardType !== Const.BoardType.SUPERMAN) {
+        // if (boardType !== Const.BoardType.SPRINT) {
         //     if (this.preType === Const.BoardType.SPRING) {
         //         Laya.Tween.to(camera.transform, {localPositionY: camPosY}, Const.CameraMoveYFramesSpring / 60 * 1000, Laya.Ease.linearInOut);
         //     }
@@ -541,19 +487,16 @@ export default class Player extends Laya.Script {
             // 难度曲线输出区间[1,10]
             let diffCoeff: number = Util.getDiffCoeff(this.diffLevel, 1, 10);
             let rand_type: number = Math.random() * diffCoeff;
-            /** 常规跳板 */
             if (rand_type <= 4.2) {
                 this.boardNewType = Const.BoardType.NORMAL;
                 // 开启联动
                 this.boardGroupCount = 2;
             }
-            /** 巨型跳板 */
             else if (rand_type <= 5.5) {
                 this.boardNewType = Const.BoardType.GIANT;
                 // 开启联动
                 this.boardGroupCount = 3;
             }
-            /** 弹簧跳板 */
             else if (rand_type <= 6.2) {
                 this.boardNewType = Const.BoardType.SPRING;
                 // 开启联动
@@ -561,35 +504,20 @@ export default class Player extends Laya.Script {
                     this.boardGroupCount = 2;
                 }
             }
-            /** 掉落跳板 */
             else if (rand_type <= 7) {
                 this.boardNewType = Const.BoardType.DROP;
                 // 开启联动
                 this.boardGroupCount = 3;
             }
-            /** 冲刺跳板 */
             else if (rand_type <= 7.5) {
                 if (this.hasSprint === false) {
-                    this.boardNewType = Const.BoardType.SUPERMAN;
+                    this.boardNewType = Const.BoardType.SPRINT;
                     this.hasSprint = true;
                     // // 一旦冲刺，重置难度
                     // this.diffLevel = 10;
                 }
                 else {
                     this.boardNewType = Const.BoardType.NORMAL;
-                }
-            }
-            /** 小型跳板 */
-            else if (rand_type <= 8) {
-                this.boardNewType = Const.BoardType.DWRAF;
-                // 开启联动
-                if (Math.random() > 0.4) {
-                    if (Math.random() > 0.7) {
-                        this.boardGroupCount = 3;
-                    }
-                    else {
-                        this.boardGroupCount = 2;
-                    }
                 }
             }
             else {
@@ -648,36 +576,6 @@ export default class Player extends Laya.Script {
                     this.scoreMeshPool[idx_score].push(scoreMesh);
                 }));
             }));
-        }));
-        (scoreMesh.meshRenderer.material as Laya.BlinnPhongMaterial).albedoColor = new Laya.Vector4(1, 1, 1, 0.8);
-        Laya.timer.once(150, this, () => {
-            Laya.Tween.to(scoreMesh.meshRenderer.material, { albedoColorR: 1, albedoColorG: 1, albedoColorB: 1, albedoColorA: 0, }, 250, Laya.Ease.linearInOut);
-        });
-        scoreMesh.active = true;
-    }
-
-    /** 显示钻石加一 */
-    showScoreDiamond(idx_score: number) {
-        let scoreMesh: Laya.MeshSprite3D;
-        // 分数池
-        if (!this.scoreMeshPool[idx_score].length) {
-            scoreMesh = this.scoreMeshList[idx_score - 1].clone() as Laya.MeshSprite3D;
-            this.player.parent.addChild(scoreMesh);
-        } else {
-            scoreMesh = this.scoreMeshPool[idx_score].pop();
-        }
-        // 设置坐标
-        let pos: Laya.Vector3 = new Laya.Vector3();
-        pos.x = GameScene.instance.diamondBox.x + 0;
-        pos.y = GameScene.instance.diamondBox.y - 0;
-        scoreMesh.transform.position = pos;
-
-        // 动画
-        scoreMesh.transform.localScale = new Laya.Vector3(0.8, 0.8, 0.8);
-        Laya.Tween.to(scoreMesh.transform, { localPositionY: pos.y - 30, localScaleX: 0.3, localScaleY: 0.3, localScaleZ: 0.3 }, 400, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-            scoreMesh.active = false;
-            scoreMesh.transform.localScale = new Laya.Vector3(1, 1, 1);
-            this.scoreMeshPool[idx_score].push(scoreMesh);
         }));
         (scoreMesh.meshRenderer.material as Laya.BlinnPhongMaterial).albedoColor = new Laya.Vector4(1, 1, 1, 0.8);
         Laya.timer.once(150, this, () => {
@@ -770,6 +668,11 @@ export default class Player extends Laya.Script {
                 this.player.transform.localPositionX += posX;
             }
         }
+    }
+
+    /** 设置拖尾位置 */
+    private setTrailPos() {
+        this.playerTrail.transform.localPosition = this.player.transform.localPosition.clone();
     }
 
     // /** 设置钻石碎片位置 */

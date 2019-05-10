@@ -7,8 +7,8 @@ import Player from "../component/Player";
 import GameConfig from "../../GameConfig";
 import OverView from "./OverView";
 import ReviveView from "./ReviveView";
+import * as Ad from "../util/Ad";
 import ws from "../util/ws.js";
-import HomeView from "./HomeView";
 
 export default class GameScene extends ui.game.GameSceneUI {
     static instance: GameScene;
@@ -66,19 +66,16 @@ export default class GameScene extends ui.game.GameSceneUI {
         this.hideTutorial(); // to add
         // this.showTutorial(); // to delete
         // this.bindButtons(); // to delete
-
+        
         this.initScene3D();
 
         GameScene.instance = this;
-
-        // 更新钻石数量
-        this.diamondLabel.changeText(Global.gameData.diamond + '');
 
         // 加载BGM
         if (Laya.Browser.onMiniGame) {
             this.sound = new wx.createInnerAudioContext();
             this.sound.src = Const.URL_BGM;
-        }
+        } 
     }
 
     onEnable() {
@@ -100,18 +97,57 @@ export default class GameScene extends ui.game.GameSceneUI {
         directionLight.transform.localPosition = Const.DirectionLightPos.clone();
         directionLight.transform.localRotationEuler = Const.DirectionLightRot.clone();
         directionLight.color = Const.DirectionLightColor.clone();
-
+        
         // 初始化摄像机
         let cameraBox: Laya.Sprite3D = this.scene3D.addChild(new Laya.Sprite3D()) as Laya.Sprite3D;
         this.cameraBoxCompo = cameraBox.addComponent(CameraBox);
 
         // 初始化玩家, 位置与摄像机局部绑定
-        let playerBox: Laya.Sprite3D = this.scene3D.addChild(new Laya.Sprite3D()) as Laya.Sprite3D;
-        this.playerCompo = playerBox.addComponent(Player);
+        let player_type: string = "cat";
 
-        // 初始化跳板
-        let boardBox: Laya.MeshSprite3D = this.scene3D.addChild(new Laya.MeshSprite3D()) as Laya.MeshSprite3D;
-        this.boardBoxCompo = boardBox.addComponent(BoardBox);
+        // 根据类型字段创建玩家模型
+        if (player_type == "cat") {
+            Laya.Mesh.load(Const.URL_PlayerModelCat, Laya.Handler.create(this, (mesh) => {
+                // 模型
+                let player: Laya.MeshSprite3D = cameraBox.addChild(new Laya.MeshSprite3D(mesh)) as Laya.MeshSprite3D;
+                this.playerCompo = player.addComponent(Player);
+                // 材质设置
+                Laya.loader.create(Const.URL_PlayerMaterialCat, Laya.Handler.create(this, (res) => {
+                    let material: Laya.BlinnPhongMaterial = new Laya.BlinnPhongMaterial();
+                    material.albedoTexture = res;
+                    material.specularColor = new Laya.Vector4(0, 0, 0, 0);
+                    player.meshRenderer.material = material;
+                }));
+                // 设置尺寸
+                player.transform.localScale = new Laya.Vector3(1.5, 1.5, 1.5);
+                
+                // 初始化跳板
+                let boardBox: Laya.MeshSprite3D = this.scene3D.addChild(new Laya.MeshSprite3D()) as Laya.MeshSprite3D;
+                this.boardBoxCompo = boardBox.addComponent(BoardBox);
+            }));
+        }
+        else {
+            let player: Laya.MeshSprite3D = cameraBox.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createSphere(Const.PlayerRadius))) as Laya.MeshSprite3D;
+            this.playerCompo = player.addComponent(Player);
+            // 材质设置
+            let url_material: string;
+            if (Global.config.online && !Global.config.skin_block) {
+                url_material = Const.URL_PlayerTexture1;
+            }
+            else {
+                url_material = Const.URL_PlayerTexture2;
+            }
+            Laya.loader.create(url_material, Laya.Handler.create(this, (res) => {
+                let material: Laya.BlinnPhongMaterial = new Laya.BlinnPhongMaterial();
+                material.albedoTexture = res;
+                material.specularColor = new Laya.Vector4(0, 0, 0, 0);
+                player.meshRenderer.material = material;
+            }));
+    
+            // 初始化跳板
+            let boardBox: Laya.MeshSprite3D = this.scene3D.addChild(new Laya.MeshSprite3D()) as Laya.MeshSprite3D;
+            this.boardBoxCompo = boardBox.addComponent(BoardBox);
+        }
 
         // 初始化顶部分数尺寸
         this.scoreLabel.scale(0.8, 0.8);
@@ -119,11 +155,6 @@ export default class GameScene extends ui.game.GameSceneUI {
 
     /**重置游戏 */
     resetGame() {
-        // 加载BGM
-        if (Laya.Browser.onMiniGame) {
-            this.sound = new wx.createInnerAudioContext();
-            this.sound.src = Const.URL_BGM;
-        }
         // 播放背景音乐
         if (this.sound) {
             this.sound.play();
@@ -139,7 +170,7 @@ export default class GameScene extends ui.game.GameSceneUI {
         this.front_top.x = -270;
         this.front_bottom.x = -270;
         this.bg_bottom.x = -270;
-
+        
         this.state = Const.GameState.READY;
         this.score = 0;
         this.scoreLabel.visible = false;
@@ -154,6 +185,11 @@ export default class GameScene extends ui.game.GameSceneUI {
         if (this.sound) {
             this.sound.play();
         }
+        // // 播放背景音乐
+        // Laya.timer.once(380, this, () => {
+        //     //Laya.SoundManager.playbackRate = 1.14;
+        //     Laya.SoundManager.playMusic(Const.URL_BGM, 0);
+        // })
 
         this.state = Const.GameState.PLAYING;
         this.hideTutorial();
@@ -169,6 +205,7 @@ export default class GameScene extends ui.game.GameSceneUI {
         if (this.sound) {
             this.sound.pause();
         }
+        // Laya.SoundManager.stopMusic();
 
         this.state = Const.GameState.PAUSE;
         this.playerCompo.hide();
@@ -186,14 +223,11 @@ export default class GameScene extends ui.game.GameSceneUI {
         // 停止播放背景音乐
         if (this.sound) {
             this.sound.stop();
-            this.sound.destroy();
         }
+        // Laya.SoundManager.destroySound(Const.URL_BGM);
 
-        // 设置状态
         this.state = Const.GameState.OVER;
         this.scoreLabel.visible = false;
-
-        // 提交分数
         let score = this.score;
         if (Laya.Browser.onMiniGame) {
             ws.postGameScore({
@@ -202,10 +236,8 @@ export default class GameScene extends ui.game.GameSceneUI {
                 time: Date.now() - this.startTimestamp,
             });
         }
-
-        // 页面跳转
         OverView.openInstance({ score }); // to add
-
+        
         //this.resetGame(); // to delete
         //GameScene.openInstance(); // to delete
     }
@@ -219,7 +251,7 @@ export default class GameScene extends ui.game.GameSceneUI {
         this.playerCompo.revive();
         this.showTutorial();
     }
-
+    
     get score(): number {
         return this._score;
     }
@@ -234,27 +266,23 @@ export default class GameScene extends ui.game.GameSceneUI {
         this.score = this.score + score;
         // 每10分颤动一下
         if (this.score >= this.scoreStep) {
-            Laya.Tween.to(this.scoreLabel, { scaleX: 1.5, scaleY: 1.5 }, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(this.scoreLabel, { scaleX: 1, scaleY: 1 }, 100, Laya.Ease.linearInOut);
+            Laya.Tween.to(this.scoreLabel, {scaleX: 1.5, scaleY: 1.5}, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(this.scoreLabel, {scaleX: 1, scaleY: 1}, 100, Laya.Ease.linearInOut);
             }));
             this.scoreStep += 10;
         }
     }
-    
-    /**增加钻石 */
-    addDiamond(diamond: number) {
-        Global.gameData.diamond += diamond;
-        this.diamondLabel.changeText(Global.gameData.diamond + '');
-    }
 
     /**显示教程 */
     private showTutorial() {
+        Ad.posShowBanner(Const.BannerPos.GameScene, true);
         this.tutorialBox.visible = true;
         this.scoreLabel.visible = true;
     }
 
     /**隐藏教程 */
     private hideTutorial() {
+        Ad.posHideBanner(Const.BannerPos.GameScene);
         this.tutorialBox.visible = false;
     }
 

@@ -30,9 +30,6 @@ export module ui.game {
 		public front_top:Laya.Sprite;
 		public scene3DBox:Laya.Sprite;
 		public scoreLabel:Laya.Label;
-		public diamondBox:Laya.Box;
-		public diamondIcon:Laya.Image;
-		public diamondLabel:Laya.Label;
 		public front_bottom:Laya.Sprite;
 		public tutorialBox:Laya.Box;
         constructor(){ super()}
@@ -51,14 +48,11 @@ export module ui.home {
 		public moreGameCloseAni:Laya.FrameAnimation;
 		public drawerButtonAni:Laya.FrameAnimation;
 		public moreGameButtonAni:Laya.FrameAnimation;
-		public moreSkinOpenAni:Laya.FrameAnimation;
-		public moreSkinCloseAni:Laya.FrameAnimation;
 		public navigatorBox:Laya.Box;
 		public homeIconBox:Laya.Box;
 		public homeIconList:Laya.List;
 		public moreGameOpenButton:Laya.Sprite;
 		public startButton:Laya.Button;
-		public skinButton:Laya.Button;
 		public drawerBox:Laya.Box;
 		public background:Laya.Image;
 		public drawerList:Laya.List;
@@ -67,10 +61,6 @@ export module ui.home {
 		public moreGameBox:Laya.Box;
 		public moreGameCloseButton:Laya.Sprite;
 		public moreGameList:Laya.List;
-		public moreSkinBox:Laya.Box;
-		public moreSkinPanel:Laya.Box;
-		public moreSkinList:Laya.List;
-		public moreSkinCloseButton:Laya.Sprite;
         constructor(){ super()}
         createChildren():void {
             super.createChildren();

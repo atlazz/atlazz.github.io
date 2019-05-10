@@ -12,17 +12,7 @@ let Global = {
         //转发次数
         shareCount: 0,
         lastShareTimestamp: 0,
-        //钻石数量
-        diamond: 0,
-        //皮肤解锁信息
-        skinUnlock: [
-            {index: 0, cost: "diamond", value: 10, state: true},
-            {index: 1, cost: "diamond", value: 10, state: false},
-            {index: 2, cost: "score", value: 50, state: false},
-            {index: 3, cost: "diamond", value: 20, state: false},
-            {index: 4, cost: "diamond", value: 30, state: false},
-            {index: 5, cost: "video", value: 0, state: false},
-        ]
+
     },
     config: {
         skin_block: false, //是否屏蔽皮肤

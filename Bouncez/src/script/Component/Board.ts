@@ -1,7 +1,6 @@
 import * as Const from "../Const";
 import GameScene from "../runtime/GameScene";
 import * as Util from "../util/Util";
-import HomeView from "../runtime/HomeView";
 
 export default class Board extends Laya.Script {
     /**跳板模型 */
@@ -187,10 +186,6 @@ export default class Board extends Laya.Script {
             this.board.transform.localScaleX = Const.BoardRadiusScaleGiant;
             this.board.transform.localScaleZ = Const.BoardRadiusScaleGiant;
         }
-        else if (this.type === Const.BoardType.DWRAF) {
-            this.board.transform.localScaleX = Const.BoardRadiusScaleDWRAF;
-            this.board.transform.localScaleZ = Const.BoardRadiusScaleDWRAF;
-        }
         else {
             this.board.transform.localScaleX = Const.BoardRadiusScale;
             this.board.transform.localScaleZ = Const.BoardRadiusScale;
@@ -228,7 +223,7 @@ export default class Board extends Laya.Script {
         }
 
         // 跳跃跳板布置
-        if (this.type === Const.BoardType.SUPERMAN) {
+        if (this.type === Const.BoardType.SPRINT) {
             this.springHelix.active = true;
             this.springTop.active = true;
             this.setSpringPos();
@@ -276,7 +271,7 @@ export default class Board extends Laya.Script {
         this.effectWave();
 
         // 弹簧特效
-        if (this.type === Const.BoardType.SPRING || this.type === Const.BoardType.SUPERMAN) {
+        if (this.type === Const.BoardType.SPRING || this.type === Const.BoardType.SPRINT) {
             this.effectSpring();
         }
 
@@ -388,8 +383,8 @@ export default class Board extends Laya.Script {
 
     /**弹簧特效 */
     private effectSpring() {
-        let stepHelix: number = (this.type === Const.BoardType.SUPERMAN) ? Const.SpringHelixStepSprint : Const.SpringHelixStep;
-        let stepTop: number = (this.type === Const.BoardType.SUPERMAN) ? Const.SpringTopStepSprint : Const.SpringTopStep;
+        let stepHelix: number = (this.type === Const.BoardType.SPRINT) ? Const.SpringHelixStepSprint : Const.SpringHelixStep;
+        let stepTop: number = (this.type === Const.BoardType.SPRINT) ? Const.SpringTopStepSprint : Const.SpringTopStep;
         if (this.currSpringFrame < Const.BoardSpringFrames) {
             this.springHelix.transform.localScaleZ += stepHelix;
             this.springTop.transform.localPositionY += stepTop;
@@ -499,10 +494,8 @@ export default class Board extends Laya.Script {
                         // 隐藏钻石
                         this.hideDiamond(idx_diamond);
                         // 加分
-                        // GameScene.instance.addScore(Const.DiamondScore);
-                        // GameScene.instance.playerCompo.showScore(Const.DiamondScore);
-                        GameScene.instance.addDiamond(1);
-                        // GameScene.instance.playerCompo.showScoreDiamond(1);
+                        GameScene.instance.addScore(Const.DiamondScore);
+                        GameScene.instance.playerCompo.showScore(Const.DiamondScore);
                         // 钻石击碎特效 todo <=================
                     }
                 }

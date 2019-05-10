@@ -1,12 +1,12 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":69,
-    "selecteID":78,
+    "selectedBox":2,
+    "selecteID":60,
     "searchKey":"View",
     "props":{"zOrder":1,"width":720,"top":0,"sceneColor":"#000000","runtime":"script/runtime/HomeView.ts","right":0,"left":0,"height":1280,"bottom":0},
     "nodeParent":-1,
-    "maxID":79,
+    "maxID":61,
     "label":"View",
     "isOpen":true,
     "isDirectory":true,
@@ -170,20 +170,6 @@
                                 ]
                         }],
                     "$HIDDEN":false
-                },
-                {
-                    "x":30,
-                    "type":"Button",
-                    "searchKey":"Button,skinButton",
-                    "props":{"y":930,"x":180,"var":"skinButton","stateNum":"1","skin":"res/texture/home/start_button.png","scaleX":0.3,"label":"label","anchorY":0.5,"anchorX":0.5},
-                    "nodeParent":7,
-                    "label":"skinButton",
-                    "isDirectory":false,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":62,
-                    "child":[
-                        ]
                 },
                 {
                     "x":30,
@@ -421,7 +407,7 @@
                                     "props":{"skin":"res/texture/navigator/moregame_panel.png","name":"panelImage","centerY":-100,"centerX":0},
                                     "nodeParent":31,
                                     "label":"panelImage",
-                                    "isOpen":true,
+                                    "isOpen":false,
                                     "isDirectory":true,
                                     "isAniNode":true,
                                     "hasChild":true,
@@ -448,7 +434,7 @@
                                             "props":{"x":53,"width":500,"var":"moreGameList","spaceY":50,"spaceX":40,"repeatX":3,"height":640,"centerY":5,"centerX":10},
                                             "nodeParent":32,
                                             "label":"moreGameList",
-                                            "isOpen":true,
+                                            "isOpen":false,
                                             "isDirectory":true,
                                             "isAniNode":true,
                                             "hasChild":true,
@@ -528,160 +514,6 @@
                             "$HIDDEN":false
                         }],
                     "$HIDDEN":true
-                },
-                {
-                    "x":30,
-                    "type":"Box",
-                    "searchKey":"Box,moreSkinBox",
-                    "props":{"y":0,"x":0,"width":720,"visible":false,"var":"moreSkinBox","height":1280,"centerY":0,"centerX":0},
-                    "nodeParent":7,
-                    "label":"moreSkinBox",
-                    "isOpen":true,
-                    "isDirectory":true,
-                    "isAniNode":true,
-                    "hasChild":true,
-                    "compId":63,
-                    "child":[
-                        {
-                            "x":45,
-                            "type":"Image",
-                            "searchKey":"Image,background",
-                            "props":{"y":-200,"x":0,"width":720,"skin":"comp/blank.png","sizeGrid":"1,1,1,1","name":"background","height":1600},
-                            "nodeParent":63,
-                            "label":"background",
-                            "isDirectory":false,
-                            "isAniNode":true,
-                            "hasChild":false,
-                            "compId":71,
-                            "child":[
-                                ]
-                        },
-                        {
-                            "x":45,
-                            "type":"Box",
-                            "searchKey":"Box,moreSkinPanel",
-                            "props":{"width":720,"var":"moreSkinPanel","height":1280,"centerY":0,"centerX":0},
-                            "nodeParent":63,
-                            "label":"moreSkinPanel",
-                            "isOpen":true,
-                            "isDirectory":true,
-                            "isAniNode":true,
-                            "hasChild":true,
-                            "compId":64,
-                            "child":[
-                                {
-                                    "x":60,
-                                    "type":"Image",
-                                    "searchKey":"Image,panelImage",
-                                    "props":{"skin":"res/texture/navigator/moregame_panel.png","name":"panelImage","centerY":-100,"centerX":0},
-                                    "nodeParent":64,
-                                    "label":"panelImage",
-                                    "isOpen":true,
-                                    "isDirectory":true,
-                                    "isAniNode":true,
-                                    "hasChild":true,
-                                    "compId":66,
-                                    "child":[
-                                        {
-                                            "x":75,
-                                            "type":"List",
-                                            "searchKey":"List,moreSkinList",
-                                            "props":{"y":88,"x":53,"width":500,"var":"moreSkinList","spaceY":60,"spaceX":40,"repeatX":3,"height":640,"centerY":5},
-                                            "nodeParent":66,
-                                            "label":"moreSkinList",
-                                            "isOpen":true,
-                                            "isDirectory":true,
-                                            "isAniNode":true,
-                                            "hasChild":true,
-                                            "compId":68,
-                                            "child":[
-                                                {
-                                                    "x":90,
-                                                    "type":"Box",
-                                                    "searchKey":"Box",
-                                                    "props":{"y":0,"x":0,"width":132,"visible":false,"renderType":"render","height":132},
-                                                    "nodeParent":68,
-                                                    "label":"Box",
-                                                    "isOpen":true,
-                                                    "isDirectory":true,
-                                                    "isAniNode":false,
-                                                    "hasChild":true,
-                                                    "compId":69,
-                                                    "child":[
-                                                        {
-                                                            "x":105,
-                                                            "type":"Sprite",
-                                                            "searchKey":"Sprite,iconImage",
-                                                            "props":{"y":64,"x":66,"width":132,"pivotY":66,"pivotX":66,"name":"iconImage","height":132},
-                                                            "nodeParent":69,
-                                                            "label":"iconImage",
-                                                            "isDirectory":false,
-                                                            "isAniNode":false,
-                                                            "hasChild":false,
-                                                            "compId":70,
-                                                            "child":[
-                                                                ]
-                                                        },
-                                                        {
-                                                            "x":105,
-                                                            "type":"Sprite",
-                                                            "searchKey":"Sprite,iconMaskImage",
-                                                            "props":{"y":-2,"width":132,"visible":false,"texture":"comp/blank.png","name":"iconMaskImage","height":132},
-                                                            "nodeParent":69,
-                                                            "label":"iconMaskImage",
-                                                            "isDirectory":false,
-                                                            "isAniNode":false,
-                                                            "hasChild":false,
-                                                            "compId":76,
-                                                            "child":[
-                                                                ]
-                                                        },
-                                                        {
-                                                            "x":105,
-                                                            "type":"Text",
-                                                            "searchKey":"Text,unlockMsg",
-                                                            "props":{"y":132,"x":0,"width":132,"text":"已解锁","name":"unlockMsg","fontSize":30,"align":"center"},
-                                                            "nodeParent":69,
-                                                            "label":"unlockMsg",
-                                                            "isDirectory":false,
-                                                            "isAniNode":false,
-                                                            "hasChild":false,
-                                                            "compId":78,
-                                                            "child":[
-                                                                ]
-                                                        }]
-                                                }]
-                                        },
-                                        {
-                                            "x":75,
-                                            "type":"Sprite",
-                                            "searchKey":"Sprite,moreSkinCloseButton",
-                                            "props":{"y":-12,"x":538,"var":"moreSkinCloseButton","texture":"res/texture/navigator/close_button.png"},
-                                            "nodeParent":66,
-                                            "label":"moreSkinCloseButton",
-                                            "isDirectory":false,
-                                            "isAniNode":true,
-                                            "hasChild":false,
-                                            "compId":67,
-                                            "child":[
-                                                ]
-                                        },
-                                        {
-                                            "x":75,
-                                            "type":"Sprite",
-                                            "searchKey":"Sprite,selected",
-                                            "props":{"y":70,"x":155,"texture":"res/texture/navigator/tips2.png","name":"selected"},
-                                            "nodeParent":66,
-                                            "label":"selected",
-                                            "isDirectory":false,
-                                            "isAniNode":true,
-                                            "hasChild":false,
-                                            "compId":72,
-                                            "child":[
-                                                ]
-                                        }]
-                                }]
-                        }]
                 }],
             "$HIDDEN":false
         },
@@ -1050,47 +882,5 @@
             "id":4,
             "frameRate":24,
             "action":2
-        },
-        {
-            "nodes":[
-                {
-                    "target":63,
-                    "keyframes":{
-                        "visible":[
-                            {
-                                "value":true,
-                                "tweenMethod":"linearNone",
-                                "tween":false,
-                                "target":63,
-                                "key":"visible",
-                                "index":0
-                            }]
-                    }
-                }],
-            "name":"moreSkinOpenAni",
-            "id":5,
-            "frameRate":24,
-            "action":0
-        },
-        {
-            "nodes":[
-                {
-                    "target":63,
-                    "keyframes":{
-                        "visible":[
-                            {
-                                "value":false,
-                                "tweenMethod":"linearNone",
-                                "tween":false,
-                                "target":63,
-                                "key":"visible",
-                                "index":0
-                            }]
-                    }
-                }],
-            "name":"moreSkinCloseAni",
-            "id":6,
-            "frameRate":24,
-            "action":0
         }]
 }

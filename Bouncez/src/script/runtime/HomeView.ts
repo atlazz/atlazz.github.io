@@ -6,7 +6,6 @@ import ws from "../util/ws.js";
 import Global from "../Global";
 import * as Ad from "../util/Ad";
 import * as Util from "../util/Util";
-import Reward from "../component/Reward";
 
 export default class HomeView extends ui.home.HomeViewUI {
     static instance: HomeView;
@@ -55,22 +54,12 @@ export default class HomeView extends ui.home.HomeViewUI {
 
     /**绑定按钮 */
     private bindButtons() {
-        //开始按钮
         this.startButton.on(Laya.Event.MOUSE_DOWN, this, () => {
             if (GameScene.instance) {
                 ws.traceEvent("Click_Startgame");
                 this.hide();
                 GameScene.openInstance();
             }
-        });
-        //皮肤切换按钮
-        this.skinButton.on(Laya.Event.MOUSE_DOWN, this, () => {
-            this.moreSkinOpenAni.play(undefined, false);
-            this.initMoreSkinIcons();
-        });
-        //更多皮肤关闭
-        this.moreSkinCloseButton.on(Laya.Event.MOUSE_DOWN, this, () => {
-            this.moreSkinCloseAni.play(undefined, false);
         });
         //抽屉打开
         this.drawerOpenButton.on(Laya.Event.MOUSE_DOWN, this, () => {
@@ -134,7 +123,7 @@ export default class HomeView extends ui.home.HomeViewUI {
     }
 
     /**登录ws后台完成*/
-    private onLoginComplete(res) {
+    private onLoginComplete(res, gameData) {
         if (ws.getLoginStatus() === 'success') {
             ws.traceEvent('WS_LOGINED');
             wx.hideLoading();
@@ -142,8 +131,7 @@ export default class HomeView extends ui.home.HomeViewUI {
             console.log('ws.user', ws.user); // 用户信息
             console.log('ws.data', ws.data); // 本地保存的游戏数据
             this.loadConfig();
-            this.loadGameData();
-
+            this.loadGameData(gameData);
         } else if (ws.getLoginStatus() === 'fail') {
             ws.traceEvent('WS_LOGIN_FAIL');
             wx.hideLoading();
@@ -166,13 +154,17 @@ export default class HomeView extends ui.home.HomeViewUI {
     }
 
     /**加载后台游戏数据*/
-    private loadGameData() {
-        if (!ws.data || !ws.data.updateTimestamp) {
+    private loadGameData(gameData) {
+        if (gameData && gameData.updateTimestamp) {
+            if (ws.data && ws.data.updateTimestamp && ws.data.updateTimestamp > gameData.updateTimestamp) {
+                ws.setAllData(ws.data, true);
+            } else {
+                ws.setAllData(gameData);
+            }
+        } else if (!ws.data || !ws.data.updateTimestamp) {
             ws.setAllData(Global.gameData, true);
         }
         Global.gameData = (<any>Object).assign(Global.gameData, ws.data);
-        // 更新显示钻石数
-        GameScene.instance && GameScene.instance.diamondLabel.changeText(Global.gameData.diamond + '');
         //关闭更新游戏数据
         wx.onHide(() => {
             this.updateGameData(true);
@@ -243,105 +235,6 @@ export default class HomeView extends ui.home.HomeViewUI {
                 this.drawerList.refresh();
             }
         });
-    }
-
-    /**更多皮肤图标*/
-    private initMoreSkinIcons() {
-        this.moreSkinList.renderHandler = Laya.Handler.create(this, (cell: Laya.Box, index: number) => {
-            let iconInfo = this.moreSkinList.array[index];
-            if (iconInfo) {
-                cell.visible = true;
-                //注册点击
-                cell.on(Laya.Event.MOUSE_DOWN, this, this.onSkinClick, [cell, iconInfo.idx]);
-                //图片
-                let iconImage = cell.getChildByName("iconImage") as Laya.Sprite;
-                iconImage && iconImage.loadImage(Const.URL_PlayerIcon[iconInfo.idx], Laya.Handler.create(this, () => {
-                    // 皮肤未解锁
-                    if (Global.gameData.skinUnlock[index].state === false) {
-                        // 未解锁蒙板
-                        let iconMaskImage = cell.getChildByName("iconMaskImage") as Laya.Sprite;
-                        iconMaskImage && (iconMaskImage.visible = true);
-                        // 解锁条件信息
-                        let unlockMsg = cell.getChildByName("unlockMsg") as Laya.Text;
-                        if (Global.gameData.skinUnlock[index].cost === "diamond") {
-                            unlockMsg && (unlockMsg.text = Global.gameData.skinUnlock[index].value + "钻解锁");
-                        }
-                        else if (Global.gameData.skinUnlock[index].cost === "score") {
-                            unlockMsg && (unlockMsg.text = Global.gameData.skinUnlock[index].value + "分解锁");
-                        }
-                        else if (Global.gameData.skinUnlock[index].cost === "video") {
-                            unlockMsg && (unlockMsg.text = "视频解锁");
-                        }
-                    }
-                    // 皮肤已解锁
-                    else {
-                        // 清除蒙板
-                        let iconMaskImage = cell.getChildByName("iconMaskImage") as Laya.Sprite;
-                        iconMaskImage && (iconMaskImage.visible = false);
-                        // 解锁信息
-                        let unlockMsg = cell.getChildByName("unlockMsg") as Laya.Text;
-                        unlockMsg && (unlockMsg.text = "已解锁");
-                    }
-                }));
-            } else {
-                cell.visible = false;
-            }
-        }, [], false);
-
-        // 加载皮肤列表数据源
-        let iconInfoList: Array<any> = [];
-        for (let i: number = 0; i < Const.PlayerMeshTypeNum; i++) {
-            iconInfoList.push({ idx: i });
-        }
-        this.moreSkinList.array = iconInfoList;
-        this.moreSkinList.refresh();
-    }
-
-    /**皮肤点击事件 */
-    private onSkinClick(cell: Laya.Box, idx: number) {
-        // 皮肤已解锁
-        if (Global.gameData.skinUnlock[idx].state) {
-            // 改变选中位置
-            let selected: Laya.Sprite = this.moreSkinPanel.getChildByName("panelImage").getChildByName("selected") as Laya.Sprite;
-            selected.x = this.moreSkinList.spaceX + cell.x + cell.width - selected.width / 2;
-            selected.y = this.moreSkinList.spaceY + cell.y + selected.height / 2;
-            // 选中图片特效
-            let iconImage = cell.getChildByName("iconImage") as Laya.Sprite;
-            Laya.Tween.to(iconImage, { scaleX: 1.1, scaleY: 1.1 }, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(iconImage, { scaleX: 1, scaleY: 1 }, 100, Laya.Ease.linearInOut);
-            }));
-            // 改变玩家皮肤
-            GameScene.instance.playerCompo.changePlayer(idx);
-        }
-        // 皮肤未解锁
-        else {
-            // 钻石解锁
-            if (Global.gameData.skinUnlock[idx].cost === "diamond" && Global.gameData.diamond >= Global.gameData.skinUnlock[idx].value) {
-                Global.gameData.diamond -= Global.gameData.skinUnlock[idx].value;
-                this.unlockSkin(cell, idx);
-            }
-            // 视频解锁  todo <=========== 视频位置需要后台新增位置配置
-            else if (Global.gameData.skinUnlock[idx].cost === "video") {
-                Reward.instance.video({
-                    pos: Const.RewardPos.Revive,
-                    success: () => {
-                        this.unlockSkin(cell, idx);
-                    }
-                });
-            }
-        }
-    }
-
-    /**解锁皮肤 */
-    unlockSkin(cell: Laya.Box, idx: number) {
-        // 改变锁定状态
-        Global.gameData.skinUnlock[idx].state = true;
-        // 改变锁定文字
-        let unlockMsg = cell.getChildByName("unlockMsg") as Laya.Text;
-        unlockMsg && (unlockMsg.text = "已解锁");
-        // 清除锁定蒙板
-        let iconMaskImage = cell.getChildByName("iconMaskImage") as Laya.Sprite;
-        iconMaskImage && (iconMaskImage.visible = false);
     }
 
     /**更多游戏图标*/

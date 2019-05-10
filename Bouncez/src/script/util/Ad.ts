@@ -8,11 +8,10 @@ let currentBannerPos: string = null;
 let clickBannerCount: number = 0;
 
 export const refreshCurrentBanner = () => {
+    clickBannerCount++;
     if (currentBannerPos && clickBannerCount >= Global.config.banner_click_time) {
         clickBannerCount = 0;
         posShowBanner(currentBannerPos, true);
-    } else {
-        clickBannerCount++;
     }
 }
 
@@ -25,7 +24,7 @@ export const posShowBanner = (pos: string, force: boolean = false) => {
     let systemInfo = wx.getSystemInfoSync();
     let screenHeight = systemInfo.screenHeight;
     let screenWidth = systemInfo.screenWidth;
-    let adWidth = Math.max(300, screenWidth);// * 0.86
+    let adWidth = Math.max(300, screenWidth * 300 / 350);// * 0.86
     let adHeight = adWidth * 0.348;
     let top = screenHeight - adHeight;
     let left = (screenWidth - adWidth) / 2;

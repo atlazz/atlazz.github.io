@@ -11,87 +11,10 @@ export const URL_OverView: string = "over/OverView.scene";
 /**复活对话框 */
 export const URL_ReviveView: string = "dialog/ReviveView.scene";
 
-/**玩家模型类型数目 */
-export const PlayerMeshTypeNum: number = 6;
-/**玩家模型类型 */
-export enum PlayerMeshType {
-    /**猫 */
-    CAT = 0,
-    /**球体 */
-    BALL01 = 1,
-    /**球体 */
-    BALL02 = 2,
-    /**球体 */
-    BALL03 = 3,
-    /**球体 */
-    BALL04 = 4,
-    /**球体 */
-    BALL05 = 5,
-}
-/**玩家模型 */
-export const URL_PlayerModel: string[] = [
-    /**猫 */
-    "res/model/game/cat.lm",
-    /**球体 */
-    "ball",
-    /**球体 */
-    "ball",
-    /**球体 */
-    "ball",
-    /**球体 */
-    "ball",
-    /**球体 */
-    "ball",
-]
-/**玩家材质 */
-export const URL_PlayerMaterial: string[] = [
-    /**猫 */
-    "res/texture/game/cat.png",
-    /**球体 */
-    "res/texture/game/ball01.png",
-    /**球体 */
-    "res/texture/game/ball02.png",
-    /**球体 */
-    "res/texture/game/ball03.png",
-    /**球体 */
-    "res/texture/game/ball04.png",
-    /**球体 */
-    "res/texture/game/ball05.png",
-]
-/**玩家ICON */
-export const URL_PlayerIcon: string[] = [
-    /**猫 */
-    "res/texture/game/cat.jpg",
-    /**球体 */
-    "res/texture/game/ball01.png",
-    /**球体 */
-    "res/texture/game/ball02.png",
-    /**球体 */
-    "res/texture/game/ball03.png",
-    /**球体 */
-    "res/texture/game/ball04.png",
-    /**球体 */
-    "res/texture/game/ball05.png",
-]
-
-/**玩家拖尾 */
-export const URL_Trail: string = "res/model/game/trail.lh"
-/**拖尾颜色 */
-export const TrailColor: Laya.Color[] = [
-    /**猫 */
-    new Laya.Color(1, 1, 1, 1),
-    /**球体 */
-    new Laya.Color(0.5, 0, 0, 1),
-    /**球体 */
-    new Laya.Color(0.5, 0, 0, 1),
-    /**球体 */
-    new Laya.Color(0.5, 0.5, 0, 1),
-    /**球体 */
-    new Laya.Color(1, 0.4, 0, 1),
-    /**球体 */
-    new Laya.Color(0.5, 0, 0, 1),
-]
-
+/**玩家模型-猫 */
+export const URL_PlayerModelCat: string = "res/model/game/cat.lm";
+/**玩家材质-猫 */
+export const URL_PlayerMaterialCat: string = "res/texture/game/cat.png";
 /**玩家材质 */
 export const URL_PlayerTexture1: string = "res/texture/game/ball05.png";
 export const URL_PlayerTexture2: string = "res/texture/game/ball03.png";
@@ -156,8 +79,9 @@ export const RewardPos = {
 /**Banner广告位置 */
 export const BannerPos = {
     HomeView: 'HomeView',
-    OverView: 'DieScene',
-    ReviveDialog: 'Revive',
+    GameScene: 'HomeView',
+    OverView: 'HomeView',
+    ReviveDialog: 'HomeView',
 }
 /**复活倒数秒数 */
 export const ReviveCountdown: number = 5;
@@ -182,7 +106,7 @@ export enum PlayerJumpState {
     JUMPUP = 1,
     /**下落 */
     FALLDOWN = 2,
-    /**冲刺飞翔 */
+    /**通关冲刺 */
     SPRINT = 3,
 }
 /**玩家半径 */
@@ -220,10 +144,8 @@ export enum BoardType {
     DROP = 2,
     /**巨型跳板 */
     GIANT = 3,
-    /**飞翔跳板 */
-    SUPERMAN = 4,
-    /**小型跳板 */
-    DWRAF = 5,
+    /**终点跳板 */
+    SPRINT = 4,
 }
 
 /**跳板半径 */
@@ -248,8 +170,6 @@ export const BoardHeightScaleDROP: number = 0.5;
 export const BoardRadiusScale: number = 1;
 /**巨型跳板半径缩放 */
 export const BoardRadiusScaleGiant: number = 2.8;
-/**小型跳板半径缩放 */
-export const BoardRadiusScaleDWRAF: number = 0.6;
 
 /**跳板中心区半径 */
 export const BoardRadiusCenter: number = 0.35;

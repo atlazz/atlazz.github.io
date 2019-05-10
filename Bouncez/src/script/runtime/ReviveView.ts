@@ -28,7 +28,7 @@ export default class ReviveView extends ui.dialog.ReviveViewUI {
         console.log("ReviveView onOpened()");
         
         if (Laya.Browser.onMiniGame && ws.isIPhoneX()) {
-            this.bottomButtonBox.bottom = 250 + Global.config.distance_iphonex || 0;
+            this.bottomButtonBox.bottom = 215 + Global.config.distance_iphonex || 0;
         }
 
         if (!this.isInitIcons && Laya.Browser.onMiniGame) {

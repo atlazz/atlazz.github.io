@@ -28,7 +28,7 @@ export default class OverView extends ui.over.OverViewUI {
         console.log("OverView onOpened()");
 
         if (Laya.Browser.onMiniGame && ws.isIPhoneX()) {
-            this.bottomButtonBox.bottom = 250 + Global.config.distance_iphonex || 0;
+            this.bottomButtonBox.bottom = 215 + Global.config.distance_iphonex || 0;
         }
 
         if (!this.isInitIcons && Laya.Browser.onMiniGame) {
@@ -48,15 +48,6 @@ export default class OverView extends ui.over.OverViewUI {
         } else {
             Ad.posShowBanner(Const.BannerPos.OverView);
         }
-
-        // 根据分数解锁皮肤
-        Global.gameData.skinUnlock.forEach((value, index) => {
-            if (value.cost === "score" && value.state === false) {
-                if (score >= value.value) {
-                    value.state = true;
-                }
-            }
-        })
     }
 
     /**是否初始化图标*/

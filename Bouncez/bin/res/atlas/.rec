@@ -62,7 +62,6 @@ D res/model/game
 R 8A1D9D8D cat.lm
 R C2C87AD8 diamond.lm
 R C33056AD diamond_piece.lm
-R 0471FE53 floor.lm
 R 466B20A5 helix.lm
 R B644BE7D particle_blue.lh
 R 9F110225 particle_red.lh
@@ -79,7 +78,6 @@ R 245A819E cat.jpg
 R 8E5ABEBE cat.png
 P DBBADFCD diamond.png
 P 8BAD1443 finger.png
-R 01A14176 floor.png
 P 28D387FE slide_bar.png
 P EE0A4557 slide_txt.png
 R 463B11DD wave.png

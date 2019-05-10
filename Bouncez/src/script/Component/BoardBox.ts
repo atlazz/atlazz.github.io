@@ -147,7 +147,7 @@ export default class BoardBox extends Laya.Script {
         // 难度曲线输出区间[1,10]
         let diffCoeff: number = Util.getDiffCoeff(diffLevel, 1, 2);
         pos.x = (Math.random() - 0.5) * Const.SceneMaxOffsetX * diffCoeff;
-        if (currBoard.getType() === Const.BoardType.SUPERMAN) {
+        if (currBoard.getType() === Const.BoardType.SPRINT) {
             pos.y += Const.BoardGapSprint;
             // 冲刺跳板下一跳板的X偏移置0
             pos.x = currBoard.getPos().x;
@@ -169,14 +169,14 @@ export default class BoardBox extends Laya.Script {
         // 从跳板列表取出第一个跳板对象
         let first = this.boardList.shift();
         // 当前为冲刺跳板
-        if (newType === Const.BoardType.SUPERMAN) {
+        if (newType === Const.BoardType.SPRINT) {
             // 设置钻石X中轴
             this.diamondCenterX = newPos.x;
             // 布置钻石
             this.setDiamond(newPos);
         }
         // 前一个为冲刺跳板
-        if (preType === Const.BoardType.SUPERMAN) {
+        if (preType === Const.BoardType.SPRINT) {
             // 冲刺跳板后一跳板特殊处理，降低难度
             first.reset(newType, newPos, 0);
         }
