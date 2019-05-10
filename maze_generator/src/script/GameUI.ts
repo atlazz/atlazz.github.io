@@ -110,15 +110,6 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
         this.player = new Laya.Sprite();
         this.player.zOrder = 1;
-
-        // 重置输入矩阵
-        this.inMaze = new Array<Array<number>>();
-        for (let i: number = 0; i < this.width; i++) {
-            this.inMaze.push(new Array<number>());
-            for (let j: number = 0; j < this.height; j++) {
-                this.inMaze[i].push(0);
-            }
-        }
     }
 
     // 迷宫生成
@@ -128,6 +119,17 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         let x: number = Math.floor(Math.random() * this.width);
         let y: number = Math.floor(Math.random() * this.height);
         let tryTimes: number = 0;
+
+        if (this.inMaze.length === 0) {
+            // 重置输入矩阵
+            this.inMaze = new Array<Array<number>>();
+            for (let i: number = 0; i < this.width; i++) {
+                this.inMaze.push(new Array<number>());
+                for (let j: number = 0; j < this.height; j++) {
+                    this.inMaze[i].push(0);
+                }
+            }
+        }
 
         console.log("Maze generating...");
         while (!this.maze.generate(x, y, this.inMaze) && tryTimes < this.maxTryTimes) {
