@@ -98,7 +98,6 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
 
         this.player = new Laya.Sprite();
         this.player.zOrder = 1;
-        this.mazeBox.addChild(this.player);
     }
 
     // 迷宫生成
@@ -264,9 +263,10 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         this.idx_y = this.maze.startY;
 
         if (this.diff >= 0) {
-            this.player.texture = Laya.loader.getRes(this.url_player);
             // 玩家所在位置涂色
             this.mazeSprite[this.idx_x][this.idx_y].texture = Laya.loader.getRes(this.url_passed);
+            this.player.texture = Laya.loader.getRes(this.url_player);
+            this.mazeBox.addChild(this.player);
         }
     }
 
