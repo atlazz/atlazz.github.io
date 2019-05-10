@@ -39,7 +39,8 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     private barriersStyleNum: number = 15;
     // 障碍物风格组标识
     private barriersStyleIdx: number = 0;
-    // 障碍物贴图组
+    // 障碍物资源加载完成计数器
+    private cnt_loader: number = 0;
 
     constructor() {
         super();
@@ -85,16 +86,18 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
         this.barriersList[12] = ["Wall_WHor4_11", "Wall_BotW2_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
         this.barriersList[13] = ["Wall_WHor1_11", "Wall_BotW1_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
         this.barriersList[14] = ["Wall_WHor3_11", "Wall_BotW2_11", "Bush_11", "Sponge_11", "ElecBox_11", "Mail_11", "Plate_11", "Pod_11", "Pod_21", "Went_11", "Door_W24", "Window_W11", "Window_W12", "Window_W21", "Window_W22", "Window_W23"];
-        
+
+        this.cnt_loader = 0;
         for (let i = 0; i < 15; i++) {
             for (let item of this.barriersList[i]) {
-                Laya.loader.load("res/barriers_texture/" + item + ".png", null);
+                Laya.loader.load("res/barriers_texture/" + item + ".png", Laya.Handler.create(this, () => {
+                    this.cnt_loader++;
+                }));
             }
         }
         Laya.loader.load(this.url_empty, null);
         Laya.loader.load(this.url_passed, null);
         Laya.loader.load(this.url_player, null);
-
 
         this.player = new Laya.Sprite();
         this.player.zOrder = 1;
@@ -274,6 +277,11 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
     private keyboardListen() {
         // 键盘按下处理
         Laya.stage.on(Laya.Event.KEY_DOWN, this, (e) => {
+            // 资源加载未完成
+            if (this.cnt_loader < this.barriersStyleNum) {
+                console.log("资源加载未完成, 当前进度: " + this.cnt_loader + "/" + this.barriersStyleNum);
+                return;
+            }
             // generate maze
             if (e["keyCode"] === 71) {
                 if (!this.widthInput.text || !this.heightInput.text || !this.diffInput.text) {
