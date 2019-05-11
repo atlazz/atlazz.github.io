@@ -439,7 +439,6 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                 this.generateMaze();
             }
             if (this.outMaze) {
-                // console.log(e["keyCode"])
                 // left
                 if (e["keyCode"] === 37) {
                     while (this.idx_x > 0 && !this.outMaze[this.idx_x - 1][this.idx_y]) {
@@ -512,8 +511,18 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     this.print();
                 }
                 // change style
-                else if (e["keyCode"] === 67) {
+                else if (e["keyCode"] === 32) {
                     this.changeBarriersStyle();
+                }
+                // check maze
+                else if (e["keyCode"] === 67) {
+                    this.maze.setMaze(this.outMaze);
+                    if (this.maze.check()) {
+                        console.log("Check maze: Succeed.");
+                    }
+                    else {
+                        console.log("Check maze: Failed.");
+                    }
                 }
             }
         });

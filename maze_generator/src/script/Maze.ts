@@ -365,7 +365,7 @@ export default class Maze {
     }
 
     /** 检验迷宫，目标使得玩家前几步骤操作有高容错率 */
-    private check() {
+    check() {
 
         this.maxUnchangeCntCheck = 10 * this.width * this.height;
 
@@ -489,5 +489,23 @@ export default class Maze {
     /** 输出迷宫矩阵, 每个单元格两种状态: true 为墙, false 为空 */
     getMaze(): Array<Array<boolean>> {
         return this.outMaze;
+    }
+
+    /** 输入迷宫矩阵 */
+    setMaze(inMaze: Array<Array<boolean>>) {
+        if (inMaze.length !== this.maze.length || inMaze[0].length !== this.maze[0].length) {
+            console.log("setMaze failed: maze size not the same.");
+            return;
+        }
+
+        this.emptyCnt = 0;
+        for (let i = 0; i < this.width; i++) {
+            for (let j = 0; j < this.height; j++) {
+                this.outMaze[i][j] = inMaze[i][j];
+                if (!inMaze[i][j]) {
+                    this.emptyCnt++;
+                }
+            }
+        }
     }
 }
