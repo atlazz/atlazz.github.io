@@ -264,6 +264,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                                 this.barriersComboBox[i][j].zOrder = 0;
                             }
                             else {
+                                let flag_render: boolean = true;
                                 let x: number = +urlString[urlString.length - 2];
                                 let y: number = +urlString[urlString.length - 1];
                                 let cntX: number = 0;
@@ -302,13 +303,13 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                                                     // 切换层级
                                                     this.mazeSprite[i][j].zOrder = 1;
                                                     this.barriersComboBox[i][j].zOrder = 0;
-                                                    flag = false;
+                                                    flag_render = false;
                                                     break;
                                                 }
-                                                if (!flag) { break; }
+                                                if (!flag_render) { break; }
                                                 cntY++;
                                             }
-                                            if (!flag) { break; }
+                                            if (!flag_render) { break; }
                                             cntX++;
                                         }
                                     }
@@ -320,7 +321,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                                 }
 
                                 urlString = "res/barriers_texture/" + urlString + ".png";
-                                if (flag && this.outMaze[i][j]) {
+                                if (flag_render && this.outMaze[i][j]) {
                                     this.mazeSprite[i][j].texture = Laya.loader.getRes(urlString);
                                     this.mazeSprite[i][j].width = this.unitWidth * cntX;
                                     this.mazeSprite[i][j].height = this.unitWidth * cntY;
