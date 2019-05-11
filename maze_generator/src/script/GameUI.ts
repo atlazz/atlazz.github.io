@@ -164,6 +164,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
             flag = true;
             barriersLabel += item;
         }
+        barriersLabel += ",empty";
         this.barriersComboBox = new Array<Array<Laya.ComboBox>>();
 
         // 渲染迷宫
@@ -188,11 +189,16 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                     comboBox.scrollBarSkin = "comp/vscroll.png";
                     comboBox.scrollBar.scaleX /= 2;
                     // 默认选择墙面
-                    if (j === this.height - 1) {
-                        comboBox.selectedIndex = 1;
+                    if (!this.outMaze[i][j]) {
+                        comboBox.selectedLabel = "empty";
                     }
                     else {
-                        comboBox.selectedIndex = 0;
+                        if (j === this.height - 1) {
+                            comboBox.selectedIndex = 1;
+                        }
+                        else {
+                            comboBox.selectedIndex = 0;
+                        }
                     }
 
                     this.mazeBox.addChild(comboBox);
@@ -240,7 +246,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         }
                     }
                     // 输出矩阵
-                    else if (this.flag_InOut === "outMaze" && this.outMaze[i][j]) {
+                    else if (this.flag_InOut === "outMaze") {
                         this.barriersComboBox[i][j].visible = true;
                         // 切换层级
                         let flag_zOrder: number = this.mazeSprite[i][j].zOrder - this.barriersComboBox[i][j].zOrder;
@@ -248,49 +254,80 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
                         this.barriersComboBox[i][j].zOrder = 1;
                         let urlString: string = this.barriersComboBox[i][j].selectedLabel;
                         if (urlString && flag_zOrder < 0) {
-                            let x: number = +urlString[urlString.length - 2];
-                            let y: number = +urlString[urlString.length - 1];
-                            let cntX: number = 0;
-                            let cntY: number = 0;
-                            let flag: boolean = true;
-                            if (x > 1 || y > 1) {
-                                while (cntX < x) {
-                                    cntY = 0;
-                                    while (cntY < y) {
-                                        // invalid
-                                        if (i + cntX >= this.width || j + cntY >= this.height || !this.outMaze[i + cntX][j + cntY]) {
-                                            if (j === this.height - 1) {
-                                                this.barriersComboBox[i][j].selectedIndex = 1;
-                                            }
-                                            else {
-                                                this.barriersComboBox[i][j].selectedIndex = 0;
-                                            }
-                                            this.mazeSprite[i][j].texture = Laya.loader.getRes("res/barriers_texture/" + this.barriersComboBox[i][j].selectedLabel + ".png");
-                                            this.mazeSprite[i][j].width = this.unitWidth;
-                                            this.mazeSprite[i][j].height = this.unitWidth;
-                                            flag = false;
-                                            break;
-                                        }
-                                        if (!flag) { break; }
-                                        cntY++;
-                                    }
-                                    if (!flag) { break; }
-                                    cntX++;
-                                }
-                            }
-                            else {
-                                cntX = 1;
-                                cntY = 1;
-                            }
-
-                            urlString = "res/barriers_texture/" + urlString + ".png";
-                            if (flag) {
-                                this.mazeSprite[i][j].texture = Laya.loader.getRes(urlString);
-                                this.mazeSprite[i][j].width = this.unitWidth * cntX;
-                                this.mazeSprite[i][j].height = this.unitWidth * cntY;
+                            if (urlString === "empty") {
+                                this.outMaze[i][j] = false;
+                                this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_empty);
+                                this.mazeSprite[i][j].width = this.unitWidth;
+                                this.mazeSprite[i][j].height = this.unitWidth;
                                 // 切换层级
                                 this.mazeSprite[i][j].zOrder = 1;
                                 this.barriersComboBox[i][j].zOrder = 0;
+                            }
+                            else {
+                                let x: number = +urlString[urlString.length - 2];
+                                let y: number = +urlString[urlString.length - 1];
+                                let cntX: number = 0;
+                                let cntY: number = 0;
+                                if (x > 1 || y > 1) {
+                                    // 空单元格不可一步设置为连续障碍物
+                                    if (!this.outMaze[i][j]) {
+                                        this.barriersComboBox[i][j].selectedLabel = "empty";
+                                        this.mazeSprite[i][j].texture = Laya.loader.getRes(this.url_empty);
+                                        this.mazeSprite[i][j].width = this.unitWidth;
+                                        this.mazeSprite[i][j].height = this.unitWidth;
+                                        // 切换层级
+                                        this.mazeSprite[i][j].zOrder = 1;
+                                        this.barriersComboBox[i][j].zOrder = 0;
+                                    }
+                                    else {
+                                        while (cntX < x) {
+                                            cntY = 0;
+                                            while (cntY < y) {
+                                                // invalid
+                                                if (i + cntX >= this.width || j + cntY >= this.height || !this.outMaze[i + cntX][j + cntY]) {
+                                                    if (!this.outMaze[i][j]) {
+                                                        this.barriersComboBox[i][j].selectedLabel = "empty";
+                                                    }
+                                                    else {
+                                                        if (j === this.height - 1) {
+                                                            this.barriersComboBox[i][j].selectedIndex = 1;
+                                                        }
+                                                        else {
+                                                            this.barriersComboBox[i][j].selectedIndex = 0;
+                                                        }
+                                                    }
+                                                    this.mazeSprite[i][j].texture = Laya.loader.getRes("res/barriers_texture/" + this.barriersComboBox[i][j].selectedLabel + ".png");
+                                                    this.mazeSprite[i][j].width = this.unitWidth;
+                                                    this.mazeSprite[i][j].height = this.unitWidth;
+                                                    // 切换层级
+                                                    this.mazeSprite[i][j].zOrder = 1;
+                                                    this.barriersComboBox[i][j].zOrder = 0;
+                                                    flag = false;
+                                                    break;
+                                                }
+                                                if (!flag) { break; }
+                                                cntY++;
+                                            }
+                                            if (!flag) { break; }
+                                            cntX++;
+                                        }
+                                    }
+                                }
+                                else {
+                                    this.outMaze[i][j] = true;
+                                    cntX = 1;
+                                    cntY = 1;
+                                }
+
+                                urlString = "res/barriers_texture/" + urlString + ".png";
+                                if (flag && this.outMaze[i][j]) {
+                                    this.mazeSprite[i][j].texture = Laya.loader.getRes(urlString);
+                                    this.mazeSprite[i][j].width = this.unitWidth * cntX;
+                                    this.mazeSprite[i][j].height = this.unitWidth * cntY;
+                                    // 切换层级
+                                    this.mazeSprite[i][j].zOrder = 1;
+                                    this.barriersComboBox[i][j].zOrder = 0;
+                                }
                             }
                         }
                     }
@@ -494,6 +531,7 @@ export default class MazeGenerator extends ui.test.TestSceneUI {
             flag = true;
             barriersLabel += item;
         }
+        barriersLabel += ",empty";
         // 更新障碍物贴图
         for (let i: number = 0; i < this.width; i++) {
             for (let j: number = 0; j < this.height; j++) {
