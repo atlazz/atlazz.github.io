@@ -368,6 +368,7 @@ export default class Maze {
     check() {
 
         this.maxUnchangeCntCheck = 10 * this.width * this.height;
+        this.maxUnchangeCntCheck = this.maxUnchangeCntCheck < 100 ? 100 : this.maxUnchangeCntCheck;
 
         // 起点
         let x: number;
@@ -397,7 +398,7 @@ export default class Maze {
         // return true;
 
         // 遍历四个方向是否均可解
-        for (let times: number = 0; times < 10; times++) {
+        for (let times: number = 0; times < 3; times++) {
             // left
             this.resetCheck();
             // 重置起点
