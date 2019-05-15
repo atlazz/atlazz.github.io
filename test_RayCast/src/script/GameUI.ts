@@ -31,28 +31,27 @@ export default class GameUI extends ui.test.TestSceneUI {
         let boxColliderShape: Laya.MeshColliderShape = new Laya.MeshColliderShape();
         boxColliderShape.mesh = box.meshFilter.sharedMesh;
         boxCollider.colliderShape = boxColliderShape;
-        boxCollider.canCollideWith = 1;
 
         let point: Laya.Vector2 = new Laya.Vector2();
         let ray: Laya.Ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, 0, 0));
 
         let hitResult: Laya.HitResult = new Laya.HitResult();
 
-        let physicsSet: Laya.PhysicsSettings = new Laya.PhysicsSettings();
-        let physicsSim: Laya.PhysicsSimulation = new Laya.PhysicsSimulation(physicsSet);
+        // let physicsSet: Laya.PhysicsSettings = new Laya.PhysicsSettings();
+        // let physicsSim: Laya.PhysicsSimulation = new Laya.PhysicsSimulation(physicsSet);
 
-        Laya.timer.frameLoop(1, this, () => {
-            point.x = Laya.MouseManager.instance.mouseX;
-            point.y = Laya.MouseManager.instance.mouseY;
-            camera.viewportPointToRay(point, ray);
-            physicsSim.rayCast(ray, hitResult, 100, 1, 1);
-            if (hitResult.succeeded) {
-                console.log(hitResult.collider.owner.name);
-            }
-        });
+        // Laya.timer.frameLoop(1, this, () => {
+        //     point.x = Laya.MouseManager.instance.mouseX;
+        //     point.y = Laya.MouseManager.instance.mouseY;
+        //     camera.viewportPointToRay(point, ray);
+        //     physicsSim.rayCast(ray, hitResult, 30, 1, 1);
+        //     if (hitResult.succeeded) {
+        //         console.log(hitResult.collider.owner.name);
+        //     }
+        // });
 
         Laya.stage.on(Laya.Event.CLICK, this, function (): void {
-            console.log(box)
+            // console.log(box)
 
             let bullet: Laya.MeshSprite3D = scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createSphere(0.02))) as Laya.MeshSprite3D;
             let mat: Laya.BlinnPhongMaterial = new Laya.BlinnPhongMaterial();
@@ -66,8 +65,25 @@ export default class GameUI extends ui.test.TestSceneUI {
             bulletCollider.colliderShape = bulletColliderShape;
             // bullet.addComponent(Laya.Rigidbody3D);
 
+            
+            point.x = Laya.MouseManager.instance.mouseX;
+            point.y = Laya.MouseManager.instance.mouseY;
+            camera.viewportPointToRay(point, ray);
+
             bullet.transform.localPosition = ray.origin.clone();
             let direction: Laya.Vector3 = ray.direction.clone();
+
+            let destPoint: Laya.Vector3 = new Laya.Vector3();
+            destPoint.x = ray.origin.x + ray.direction.x * 3;
+            destPoint.y = ray.origin.y + ray.direction.y * 3;
+            destPoint.z = ray.origin.z + ray.direction.z * 3;
+
+            // let flag = physicsSim.shapeCast(bulletColliderShape, ray.origin.clone(), destPoint.clone(), hitResult);
+            scene.physicsSimulation.rayCast(ray, hitResult, 30);
+            if (hitResult.succeeded) {
+                console.log(hitResult.collider.owner.name);
+            }
+
             bullet.frameLoop(1, bullet, () => {
                 bullet.transform.localPositionX += direction.x * 3 / 60;
                 bullet.transform.localPositionY += direction.y * 3 / 60;

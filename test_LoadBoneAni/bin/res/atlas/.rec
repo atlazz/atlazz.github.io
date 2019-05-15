@@ -1,4 +1,7 @@
 D .
+D backup
+R E086F9E6 res.zip
+R 6CE8BF86 zombie_police.lh
 D comp
 P 9401CC40 blank.png
 P B03390E5 btn_close.png
@@ -42,21 +45,91 @@ P 7E990267 vscroll.png
 P E466EB1C vslider$bar.png
 P 2BFF7046 vslider.png
 D res
-R 4734200E zombie_walk.lh
+R DDC0789D human.lh
+R 7CEF380C scene.lh
+R EE7AEEA5 zombie_police.lh
 D res/Assets
-R 3A87B8A5 zombie_walk-Cylinder001.lm
-R 0EF471BB zombie_walk-Object001.lm
-R 4CE9A578 zombie_walk-Object003.lm
-R E55CDE91 zombie_walk-Object006.lm
-R 699387D9 zombie_walk-Object007.lm
-R ADAD1B5B zombie_walk-Object008.lm
-R E3A0002E zombie_walk-Object011.lm
-R 2C0E1DAC zombie_walk-Object014.lm
-R A66C2354 zombie_walk-Object015.lm
-R A15A202E zombie_walk-Object016.lm
-R 13F56525 zombie_walk-Object018.lm
-R EF02F863 zombie_walk-Object019.lm
-R 9CC7BBD0 zombie_walk-Object020.lm
-R F26FCCB9 zombie_walk-Take 001.lani
-R 8B1BC6F9 zombie_walk-zombie_walk-zombie_walkAvatar.lav
-R 2AB6AF23 zombie_walk.lmat
+R 9A6759DA character_shadow.png
+R EDED5160 floor-Plane001.lm
+R A8B3322D human-Avatar_Suit_0.lm
+R 922DCCA2 human-human-humanAvatar.lav
+R 83654F0F human-shadow_0.lm
+R C8148F7C human-Take 001.lani
+R 5985ACA4 human.lmat
+R 83654F0F zombie_police 1-shadow_0.lm
+R 3479B4CF zombie_police 1-shield_0.lm
+R 2195D4FB zombie_police 1-zombie_police 1-zombie_police 1Avatar.lav
+R 7021CD1F zombie_police 1-Zombie_Police02_0.lm
+R 83654F0F zombie_police-shadow_0.lm
+R 3479B4CF zombie_police-shield_0.lm
+R A4323AC9 zombie_police-Take 001.lani
+R A45DF648 zombie_police-zombie_police-zombie_policeAvatar.lav
+R 7021CD1F zombie_police-Zombie_Police02_0.lm
+R 278D4BC5 zombie_police.lmat
+R 3F7762DB Zombie_Police02.jpg
+R 3DA04227 Zombie_Police_Equip.png
+R 62ADF3AA zombie_police_shadow.lmat
+R A4341BF7 zombie_police_shield.lmat
+R B52087BD Zombies 4-Avatar_Suit_0.lm
+R 18B3CB83 Zombies 4-Human-HumanAvatar.lav
+R 83654F0F Zombies 4-shadow_0.lm
+R 2DDA0E39 Zombies 4-WoodBox-WoodBoxAvatar.lav
+R 286616A3 Zombies 4-WoodBox_0.lm
+R 2B8BDE5D Zombies 4.lmat
+D res/Assets/fbx格式文件
+D res/Assets/Scene
+D res/Assets/zombie2
+R 0B48C248 woodbox-woodbox (1)-woodboxAvatar.lav
+R 35EDDBB9 woodbox-woodbox (2)-woodboxAvatar.lav
+R 5D07B881 woodbox-woodbox (3)-woodboxAvatar.lav
+R 2E1EC73A woodbox-woodbox (4)-woodboxAvatar.lav
+R 9E1B17E4 woodbox-woodbox (5)-woodboxAvatar.lav
+R 4073FD5A woodbox-woodbox (6)-woodboxAvatar.lav
+R BAC51CE4 woodbox-woodbox (7)-woodboxAvatar.lav
+R 419B217B woodbox-woodbox-woodboxAvatar.lav
+R 286616A3 woodbox-WoodBox_0.lm
+R 446CC977 woodbox.lmat
+D res/Assets/Zombies 4.3.8
+D res/Assets/fbx格式文件/Scenes_02
+R F322C48F mountain01.png
+R 87DA98AA Scenes_02.lmat
+D res/Assets/fbx格式文件/Tower_Base2_3
+R 8086A780 tower_base2.jpg
+R 78D28E65 Tower_Base2_3-Tower_Base2_3 (1)-Tower_Base2_3Avatar.lav
+R 7F0B8CFD Tower_Base2_3-Tower_Base2_3-Tower_Base2_3Avatar.lav
+R 1F3FCBB6 Tower_Base2_3-Tower_Base2_3_0.lm
+R 6943C723 Tower_Base2_3.lmat
+D res/Assets/Scene/DesertPatch4
+R 008A6449 Barracks_a.jpg
+R 4C6EF5B9 DesertPatch4-barracks_006_0.lm
+R 17B39C7C DesertPatch4-DesertPatch4-DesertPatch4Avatar.lav
+R C16B7D47 DesertPatch4-mud_hut_010_0.lm
+R 135454E5 DesertPatch4-mud_hut_011_0.lm
+R 727833F2 DesertPatch4-palm_066_0.lm
+R 9F90C0E6 DesertPatch4-palm_067_0.lm
+R C2BC3639 DesertPatch4-palm_068_0.lm
+R 78F583ED DesertPatch4-palm_069_0.lm
+R B36849CC DesertPatch4-palm_070_0.lm
+R 5377212A DesertPatch4-palm_071_0.lm
+R 96BE3C57 DesertPatch4-palm_072_0.lm
+R 403CDAF3 DesertPatch4-palm_073_0.lm
+R 7EFB545B DesertPatch4-Plane-Des004_0.lm
+R CFCCEA75 DesertPatch4-RoadDes003_0.lm
+R A1ACF219 DesertPatch4-tent_005_0.lm
+R D837DF7A DesertPatch4-tent_006_0.lm
+R F0BEC45B DesertPatch4-tent_007_0.lm
+R B4385AF5 DesertPatch4-tent_008_0.lm
+R 9CB141D4 DesertPatch4-tent_009_0.lm
+R CD1C2614 DesertPatch4.lmat
+R 99173011 DesertPath1.jpg
+R 8BE681C8 Mud_Hut.jpg
+R 4C82275B Palm_Tree.jpg
+R 43B61BEE Road_Dirt.jpg
+R 8FC8C31A Tent.jpg
+D res/Assets/Zombies 4.3.8/Crossbow_Bullet
+R CE953EFE property.png
+D res/Assets/Zombies 4.3.8/Human
+R 9A6759DA character_shadow.png
+R 9F8ED4D0 Everyman.png
+D res/Assets/Zombies 4.3.8/WoodBox
+R CE953EFE property.png
